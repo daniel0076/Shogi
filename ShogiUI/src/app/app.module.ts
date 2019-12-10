@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import { NgxsModule } from '@ngxs/store';
+import { NgxsWebsocketPluginModule } from '@ngxs/websocket-plugin';
 import { WelcomeComponent } from './welcome/welcome.component';
 import { BoardComponent } from './board/board.component';
 import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
@@ -16,6 +17,7 @@ import en from '@angular/common/locales/en';
 
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
+import { GameComponent } from './game/game.component';
 
 registerLocaleData(en);
 
@@ -23,7 +25,8 @@ registerLocaleData(en);
   declarations: [
     AppComponent,
     BoardComponent,
-    WelcomeComponent
+    WelcomeComponent,
+    GameComponent
   ],
   imports: [
     CoreModule,
@@ -31,6 +34,9 @@ registerLocaleData(en);
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([]),
+    NgxsWebsocketPluginModule.forRoot({
+      url: 'ws://localhost:38763'
+    }),
     NgZorroAntdModule,
     FormsModule,
     HttpClientModule,

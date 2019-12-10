@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { BoardComponent } from './board/board.component';
+import { GameComponent } from './game/game.component';
 import { AuthComponent } from './core/auth/auth.component';
 import { WelcomeComponent } from './welcome/welcome.component';
 
@@ -10,8 +10,8 @@ const routes: Routes = [
     component: WelcomeComponent
   },
   {
-    path: 'board',
-    component: BoardComponent
+    path: 'game',
+    component: GameComponent
   },
   {
     path: '',
