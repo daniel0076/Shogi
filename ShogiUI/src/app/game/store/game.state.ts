@@ -4,7 +4,8 @@ import { Game } from './game.actions';
 
 export interface GameStateModel {
   usi: string;
-  role: boolean;
+  turn: number;  // 先手、後手
+  round: number;
 }
 
 @State<GameStateModel>({
@@ -15,8 +16,18 @@ export class GameState{
   constructor() { }
 
   @Selector()
-  static getUSI(state: GameStateModel) {
+  static getUSI(state: GameStateModel): string{
     return state.usi;
+  }
+
+  @Selector()
+  static getTurn(state: GameStateModel): number {
+    return state.turn;
+  }
+
+  @Selector()
+  static getRound(state: GameStateModel): number {
+    return state.round;
   }
 
   @Action(Game.UpdateUSI)
@@ -30,7 +41,20 @@ export class GameState{
   updateGameState(ctx: StateContext<GameStateModel>, action: Game.UpdateGameState) {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
       state.usi = action.gameState.usi;
-      state.role = action.gameState.role;
+    }));
+  }
+
+  @Action(Game.ResetGame)
+  resetGame(ctx: StateContext<GameStateModel>, action: Game.ResetGame) {
+    ctx.setState(produce((state: Draft<GameStateModel>) => {
+      state.usi = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+    }));
+  }
+
+  @Action(Game.SetTurn)
+  setTurn(ctx: StateContext<GameStateModel>, action: Game.SetTurn) {
+    ctx.setState(produce((state: Draft<GameStateModel>) => {
+      state.turn = action.turn;
     }));
   }
 

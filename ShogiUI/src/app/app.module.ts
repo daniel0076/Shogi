@@ -19,6 +19,8 @@ import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { GameComponent } from './game/game.component';
 
+import { GameState } from './game/store/game.state';
+
 registerLocaleData(en);
 
 @NgModule({
@@ -33,7 +35,9 @@ registerLocaleData(en);
     SharedModule,
     BrowserModule,
     AppRoutingModule,
-    NgxsModule.forRoot([]),
+    NgxsModule.forRoot([
+      GameState
+    ]),
     NgxsWebsocketPluginModule.forRoot({
       url: 'ws://localhost:38763'
     }),

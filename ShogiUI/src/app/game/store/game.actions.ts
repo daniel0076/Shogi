@@ -12,4 +12,14 @@ export namespace Game {
         constructor(public usi: string) { }
     }
 
+    export class ResetGame {
+        static readonly type = '[Game] Reset Game';
+        constructor() { }
+    }
+
+    export class SetTurn{
+        static readonly type = '[Game] Reset Game';
+        constructor(public turn: number) { }
+    }
+
 }

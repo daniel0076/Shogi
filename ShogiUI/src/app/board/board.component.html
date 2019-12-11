@@ -1,104 +1,12 @@
 <div class="board">
     <table>
         <tbody>
-            <tr>
-                <td><app-piece [piece]="this.board[0][0]"></app-piece></td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td><app-piece [piece]="this.board[1][0]"></app-piece></td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
-                <td>A</td>
+            <tr *ngFor="let row of board">
+                <td *ngFor="let piece of row">
+                    <ng-container *ngIf="piece.symbol">
+                        <app-piece [piece]="piece" [turn]="myTurn"></app-piece>
+                    </ng-container>
+                </td>
             </tr>
         </tbody>
     </table>
