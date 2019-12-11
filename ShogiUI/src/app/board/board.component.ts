@@ -69,7 +69,7 @@ export class BoardComponent implements OnInit {
         }
       } else if (token === '+') {
         i += 1;
-        token += pieces[i];
+        token += row[i];
         piece.symbol = token;
         pieces.push(piece);
       } else {

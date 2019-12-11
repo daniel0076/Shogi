@@ -30,6 +30,11 @@ export class GameState{
     return state.round;
   }
 
+  @Action(Game.SelectRecord)
+  test(ctx: StateContext<GameStateModel>, action: any) {
+    console.log(action);
+  }
+
   @Action(Game.UpdateUSI)
   updateUSI(ctx: StateContext<GameStateModel>, action: Game.UpdateUSI) {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
@@ -38,9 +43,11 @@ export class GameState{
   }
 
   @Action(Game.UpdateGameState)
-  updateGameState(ctx: StateContext<GameStateModel>, action: Game.UpdateGameState) {
+  updateGameState(ctx: StateContext<GameStateModel>, action: any) {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
-      state.usi = action.gameState.usi;
+      console.log(action);
+      state.usi = action.content.usi;
+      state.turn = action.content.turn;
     }));
   }
 

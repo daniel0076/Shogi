@@ -13,6 +13,6 @@ export class AppComponent implements OnInit{
   ) {}
 
   ngOnInit() {
-    //this.store.dispatch(new ConnectWebSocket());
+    this.store.dispatch(new ConnectWebSocket());
   }
 }
