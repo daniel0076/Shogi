@@ -1,5 +1,5 @@
-from piece import Piece
-from Consts import *
+from Shogi.piece import Piece
+from Shogi.Consts import *
 import json
 
 '''
