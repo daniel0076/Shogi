@@ -70,6 +70,7 @@ class Game:
         data = {}
         data['content'] = {}
         data['type'] = "gameStatus"
+        data['content']['color']       = 1
         data['content']['round']       = self.round
         data['content']['isFinish']    = self.is_finish
         data['content']['winner']      = self.winner
@@ -82,8 +83,9 @@ class Game:
         # Wait territory API
         self.user1_ws.send(json.dumps(data))
         if (self.user2_id != -1):
+            data['content']['color']   = 2
             self.user2_ws.send(json.dumps(data))
-        print(self.board)
+        #print(self.board)
 
     def check_finish(self):
         # Check game finish and winner
@@ -93,11 +95,13 @@ class Game:
 class Single(Game):
     def __init__(self, game_id, user_id, user_ws):
         super().__init__(game_id, user_id, -1, user_ws, -1)
+        self.send_game_status()
 
     
 class Online(Game):
     def __init__(self, game_id, user1_id, user2_id, user1_ws, user2_ws):
         super().__init__(game_id, user1_id, user2_id, user1_ws, user2_ws)
+        self.send_game_status()
 
     def exit(self):
         # online gmae can't surrender

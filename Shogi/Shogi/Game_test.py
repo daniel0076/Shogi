@@ -11,7 +11,7 @@ def send(text):
 
 send('{"type": "login"}')
 
-ws.send('{"type": "game"}')
+ws.send('{"type": "game", "content":{"type": "single"}}')
 
 send('{ "type": "move", "content":{"type":"move", "content":"9c9d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"9g9f"}}')
@@ -23,7 +23,6 @@ send('{ "type": "move", "content":{"type":"move", "content":"6c6d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"6g6f"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5c5d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5g5f"}}')
-time.sleep(20)
 send('{ "type": "move", "content":{"type":"back"}}')
 send('{ "type": "move", "content":{"type":"surrender", "content": 1}}')
 
