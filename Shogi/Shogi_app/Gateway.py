@@ -3,7 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 import json
 import logging
 
-import Shogi.Game
+from Shogi_app.GameManager import GameManagerSingleton
 
 class Gateway(WebsocketConsumer):
 
@@ -31,7 +31,7 @@ class Gateway(WebsocketConsumer):
 
         elif msg['type'] == "game":
             # register a new game
-            self.game = Shogi.GameManagerSingleton.new_game(msg['content'], self.user_id, self)
+            self.game = GameManagerSingleton.new_game(msg['content'], self.user_id, self)
             
             # for dev
             #self.game = Shogi.Game.Game(87, 1, -1, self, self)

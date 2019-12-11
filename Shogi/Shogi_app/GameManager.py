@@ -2,7 +2,7 @@ import json
 import threading
 import time
 
-import Shogi.Game as Game
+import Shogi_app.Game as Game
 
 class GameManager:
     def __init__(self, start_game_id):
@@ -56,4 +56,4 @@ class GameManager:
                 return game_obj
 
 
-
+GameManagerSingleton = GameManager(1000)

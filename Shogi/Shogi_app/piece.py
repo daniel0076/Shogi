@@ -1,4 +1,4 @@
-from Shogi.Consts import * 
+from Shogi_app.Consts import * 
 
 class Piece():
     def __init__(self, symbol, color, location):

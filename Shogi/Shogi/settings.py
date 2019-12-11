@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'channels'
+    'channels',
+    'Shogi_app'
 ]
 
 MIDDLEWARE = [
@@ -121,4 +122,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-ASGI_APPLICATION = "Shogi.routing.application"
+ASGI_APPLICATION = "Shogi_app.routing.application"

@@ -1,6 +1,7 @@
 import json
 
-import Shogi.ShogiBoard as ShogiBoard
+import Shogi_app.ShogiBoard as ShogiBoard
+#import Shogi.models
 
 class Game:
     def __init__(self, game_id, user1_id, user2_id, user1_ws, user2_ws):
@@ -46,6 +47,7 @@ class Game:
     def exit(self):
         # Store game in DB
         # and tell the user info manager to update
+        #GameHistory.objects.creat(user1_id = self.user1_id, user2_id = self.user2_id, init_usi = self.history_board[0], moves = json.dumps(self.history_move))
         print({"id": self.game_id, "user1": self.user1_id, "user2": self.user2_id, "usi": self.history_move})
         # del self
         # set user info manager user not in game
