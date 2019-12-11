@@ -9,7 +9,7 @@ class Gateway(WebsocketConsumer):
 
     def connect(self):
         # as a constructor
-        self.userid   = -1
+        self.user_id   = -1
         self.is_login = 0
         self.in_game  = 0
         self.accept()
@@ -21,7 +21,7 @@ class Gateway(WebsocketConsumer):
         
         if msg['type'] == "login":
             # do login
-            #self.userid = 
+            self.user_id = 87
             self.is_login = 1
             self.send(text_data = "suc")
         
@@ -31,11 +31,11 @@ class Gateway(WebsocketConsumer):
 
         elif msg['type'] == "game":
             # register a new game
-            #self.gmae = Game_manager.new_game(msg.content)
+            self.game = Shogi.GameManagerSingleton.new_game(msg['content'], self.user_id, self)
             
             # for dev
-            self.game = Shogi.Game.Game(87, 1, -1, self, self)
-            self.in_game = 1
+            #self.game = Shogi.Game.Game(87, 1, -1, self, self)
+            #self.in_game = 1
             
         elif msg['type'] == "move":
             # pass data to the game
