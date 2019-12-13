@@ -32,7 +32,6 @@ export class GameState{
 
   @Action(Game.SelectRecord)
   test(ctx: StateContext<GameStateModel>, action: any) {
-    console.log(action);
   }
 
   @Action(Game.UpdateUSI)
@@ -45,7 +44,6 @@ export class GameState{
   @Action(Game.UpdateGameState)
   updateGameState(ctx: StateContext<GameStateModel>, action: any) {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
-      console.log(action);
       state.usi = action.content.usi;
       state.turn = action.content.turn;
     }));

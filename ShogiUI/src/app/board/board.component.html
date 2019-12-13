@@ -1,8 +1,8 @@
 <div class="board">
     <table>
         <tbody>
-            <tr *ngFor="let row of board">
-                <td *ngFor="let piece of row">
+            <tr *ngFor="let row of board; let rowIndex = index">
+                <td *ngFor="let piece of row; let colIndex=index" (click)="cellClicked(rowIndex)">
                     <ng-container *ngIf="piece.symbol">
                         <app-piece [piece]="piece" [turn]="myTurn"></app-piece>
                     </ng-container>

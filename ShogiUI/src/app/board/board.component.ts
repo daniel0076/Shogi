@@ -34,6 +34,10 @@ export class BoardComponent implements OnInit {
     this.turn$.subscribe(this.turnObserver);
   }
 
+  cellClicked(event: Event) {
+    console.log(event);
+  }
+
   parseUSI(usi: string){
     if (!usi) {
       return;

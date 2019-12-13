@@ -51,7 +51,6 @@ export class PieceComponent implements OnInit {
   }
 
   getPieceImg(key: string) {
-    console.log("getpiece", key, this.turn);
     if (this.turn === 0) { // first hand, usi in upper case
       if (key === key.toUpperCase()) {
         return PieceComponent.upwardPieceImage[key];
