@@ -21,7 +21,7 @@ class Game:
         self.history_board = [self.board.output_usi()]
         self.history_move  = []
         self.record_move   = []
-        self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime()), 
+        self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime())[0], 
         self.start_time    = time.time()
 
     def __str__(self):
@@ -109,52 +109,62 @@ class Game:
     def send_game_status(self):
         data = {}
         data['content'] = {}
-        data['type'] = "gameStatus"
-        data['content']['color']       = 0
+        data['type'] = "[Game] Update Game State" 
+        data['content']['turn']        = 0
         data['content']['round']       = self.round
         data['content']['isFinish']    = self.is_finish
         data['content']['winner']      = self.winner
         data['content']['usi']         = self.board.output_usi()
-        data['content']['validMove']   = ''
-        # All valid move?
+        data['content']['validMove']   = self.board.legal_moves()
         data['content']['isCheckmate'] = self.board.is_checkmate
-        data['content']['checkmate']   = self.board.checkmater
+        data['content']['checkmater']  = self.board.checkmater
         data['content']['territory']   = ''
         # Wait territory API
-        self.user1_ws.send(json.dumps(data))
-        if (self.user1_id != self.user2_id):
-            data['content']['color']   = 1
+
+        if (self.user1_id == self.user2_id):
+            data['content']['turn']        = self.round % 2
+            self.user1_ws.send(json.dumps(data))
+        else:
+            self.user1_ws.send(json.dumps(data))
+            data['content']['turn']   = 1
             self.user2_ws.send(json.dumps(data))
         #print(self.board)
 
     def send_records(self):
         data = {}
-        data['type'] = "records"
+        data['type'] = "[Game] Select Record"
         r = GameHistory.objects.filter(Q(user1_id = self.user1_id) | Q(user2_id = self.user1_id))
         data['content'] = [{"game_id": x['pk'], "date": x['fields']['date'], "duration": x['fields']['duration']} for x in json.loads(serializers.serialize('json', r))]
         self.user1_ws.send(json.dumps(data))
 
     def check_finish(self):
         # Check game finish and winner
-        # Wait ShogiBoard
-        pass
+        self.is_finish = self.board.is_win
+        self.winner = self.board.winner
 
 class Single(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
         self.send_game_status()
-
+    
+    def update(self, data):
+        if data['type'] == 'move' or data['type'] == 'prev' or data['type'] == 'exit': 
+            super().update(data)
     
 class Online(Game):
     def __init__(self, user1_id, user2_id, user1_ws, user2_ws):
         super().__init__(user1_id, user2_id, user1_ws, user2_ws)
         self.send_game_status()
 
-    def exit(self):
-        # online gmae can't surrender
-        pass
+    def update(self, data):
+        if data['type'] == 'move' or data['type'] == 'surrender': 
+            super().update(data)
 
 class Record(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
         self.send_records()
+
+    def update(self, data):
+        if data['type'] == 'prev' or data['type'] == 'next' or data['type'] == 'exit': 
+            super().update(data)

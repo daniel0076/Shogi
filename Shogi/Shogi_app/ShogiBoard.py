@@ -19,7 +19,8 @@ class Board():
         self.possible = [None, None]
         self.possible = self.cal_possible_moves()
         self.cal_checkmate()
-        self.winer = None
+        self.winner = None
+        self.is_win = False
         self.check_win()
 
     def init_board(self, usi): 
@@ -385,7 +386,7 @@ class Board():
                     tmp_pos[lc] = tmp
             self.possible[self.side] = tmp_pos
             if self.is_win:
-                self.winer = self.side ^ 1
+                self.winner = self.side ^ 1
 
     def __str__(self):
         output = ''
