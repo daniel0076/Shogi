@@ -9,7 +9,7 @@ def send(text):
     result =  ws.recv()
     print("=> '%s'" % result)
 
-send('{"type": "login"}')
+send('{"type": "login", "content":{"username":"test", "password":"password"}}')
 
 ws.send('{"type": "game", "content":{"type": "single"}}')
 
@@ -24,7 +24,7 @@ send('{ "type": "move", "content":{"type":"move", "content":"6g6f"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5c5d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5g5f"}}')
 send('{ "type": "move", "content":{"type":"back"}}')
-send('{ "type": "move", "content":{"type":"surrender", "content": 1}}')
+#send('{ "type": "move", "content":{"type":"surrender", "content": 1}}')
 
 ws.close()
 

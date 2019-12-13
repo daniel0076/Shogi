@@ -14,3 +14,12 @@ class GameHistory(models.Model):
     def __unicode__(self):
         return self.id
 
+class UserAccount(models.Model):
+    username = models.CharField(max_length = 20)
+    password = models.CharField(max_length = 20)
+
+    objects = UserManager()
+    
+    def __unicode__(self):
+        return self.id
+
