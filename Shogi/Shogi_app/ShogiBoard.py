@@ -1,5 +1,5 @@
-from Shogi_app.piece import Piece
-from Shogi_app.Consts import *
+from piece import Piece
+from Consts import *
 import json
 
 '''
@@ -16,23 +16,25 @@ class Board():
         self.side = side
         self.is_checkmate = False
         self.checkmater = []
-        self.is_win = False
         self.possible = [None, None]
-        self.possible[0] = self.cal_possible_moves(0)
-        self.possible[1] = self.cal_possible_moves(1)
+        self.possible = self.cal_possible_moves()
         self.cal_checkmate()
+        self.winer = None
+        self.check_win()
 
     def init_board(self, usi): 
+        self.init_board_nowin(usi)
+        self.check_win()
+
+    def init_board_nowin(self, usi):
         board, side, hand_pieces, move_count = self.parse_usi(usi)
         self.board = self.init_boardstate(board)
         self.hands = self.init_hand(hand_pieces)
         self.move_count = move_count
         self.side = side
         self.is_checkmate = False
-        self.is_win = False
         self.possible = [None, None]
-        self.possible[0] = self.cal_possible_moves(0) # the possible move of the black
-        self.possible[1] = self.cal_possible_moves(1) # the possible move of the white
+        self.possible = self.cal_possible_moves() # the possible move of the black
         self.cal_checkmate()
 
 
@@ -94,6 +96,8 @@ class Board():
                     if(token.islower()):
                         token = token.upper() 
                         color = w
+                    #if(token ==) 
+                    # TODO
                     row.append(Piece(eval(token.replace('+', 'PRO_')), color, (i, j)))
                     j += 1
             board.append(row)
@@ -131,7 +135,6 @@ class Board():
 
 
     def cal_checkmate(self):
-        # TODO
         sym = 'K'
         if self.side:
             sym = 'k'
@@ -147,7 +150,33 @@ class Board():
             if self.possible[1^self.side][move] != None and loc in self.possible[1^self.side][move]:
                 self.is_checkmate = True
                 self.checkmater.append(self.loc2usi(move))
+
+
         
+    def simulate_move(self, lc, move):
+        usi = self.output_usi()
+        if type(lc[0]) == int:
+            move_com = self.loc2usi(lc) + self.loc2usi(move) 
+        else:
+            move_com = lc + move
+        assert(len(move_com) == 4 or len(move_com) == 5)
+        if(move_com[1] == '*'):
+            loc = self.get_loc(move_com[2:4])
+            piece = self.put_piece(move_com[0], loc)
+            self.board[loc[0]][loc[1]] = piece
+        else:
+            lc1, lc2 = self.get_loc(move_com[:2]) , self.get_loc(move_com[2:4])
+            if(self.board[lc2[0]][lc2[1]] != None):
+                self.take_piece(lc2, self.side)
+            self.board[lc2[0]][lc2[1]] = self.board[lc1[0]][lc1[1]]  
+            self.board[lc1[0]][lc1[1]] = None
+            if(len(move_com) == 5):
+               self.do_promote(lc2) 
+        self.possible = self.cal_possible_moves()
+        self.cal_checkmate()
+        check = self.is_checkmate
+        self.init_board_nowin(usi)
+        return check
 
     def have_promote(self, lc1, lc2, side):
         pc = self.board[lc1[0]][lc1[1]]
@@ -165,9 +194,33 @@ class Board():
             return 0
         return -1
 
+    def legal_moves(self):
+        # TODO the checkmate
+        moves = {}
+        side = 1
+        if(self.side):
+            side = -1
+        for lc in self.possible[self.side]:
+            if self.possible[self.side][lc]:
+                if type(lc[0]) == int:
+                    tmp = []
+                    for pos in self.possible[self.side][lc]:
+                        ans = self.loc2usi(pos)
+                        if self.have_promote(lc, pos, side) == 1:
+                            ans += '*'
+                        elif self.have_promote(lc, pos, side) == 0:
+                            ans += '+'
+                        else:
+                            ans += '#'
+                        tmp.append(ans)
+                    moves[self.loc2usi(lc)] = tmp
+                else:
+                    moves[lc] = self.possible[self.side][lc]
+        return moves
+
+
 
     def get_possible(self, loc, side):
-        # TODO
         pc = self.board[loc[0]][loc[1]]
         rule = Rule(self.board)
         rules = { 
@@ -186,7 +239,7 @@ class Board():
                 '+r': rule.prom_rook_rule,
                 '+s': rule.gold_rule
         }
-        method = rules.get(pc.get_symbol())
+        method = rules.get(pc.get_symbol().lower())
         if method: 
             return method(loc, side)
     
@@ -217,13 +270,24 @@ class Board():
              
         return pos
 
-    def cal_possible_moves(self, side):
-        moves = {}
-        for i in range(9):
-            for j in range(9):
-                if self.board[i][j] != None and self.board[i][j].color == side: 
-                    moves[(i,j)] = self.get_possible((i,j), side)
-        return moves
+    def cal_possible_moves(self):
+        possible = []
+        for side in range(2):
+            moves = {}
+            sign_side = 1
+            if(side == 0):
+                sign_side = -1
+            for i in range(9):
+                for j in range(9):
+                    if self.board[i][j] != None and self.board[i][j].color == side: 
+                        moves[(i, j)] = self.get_possible((i,j), sign_side)
+            for piece in self.hands:
+                if (piece.islower() and side) or (piece.isupper() and not side):
+                    if self.hands[piece] == 0:
+                        moves[piece+'*']= self.valid_move(piece+'*')
+            possible.append(moves) 
+                
+        return possible
 
     def valid_move(self, loc):
         moves = []
@@ -264,7 +328,7 @@ class Board():
         taken = self.board[lc[0]][lc[1]] 
         sym =  taken.get_front_symbol()
         if side == b:
-            sym = sym.uppper()
+            sym = sym.upper()
         if sym in self.hands:
             self.hands[sym] += 1
         else:
@@ -272,14 +336,19 @@ class Board():
         return 
    
     def put_piece(self, sym, loc):
-        if(self.side == b):
-            piece = Piece(eval(sym), b, loc)
+        if self.side == b:
+            piece = Piece(eval(sym.upper()), self.side, loc)
         else:
-            piece = Piece(eval(sym), w, loc)
-            sym = sym.lower() 
+            sym = sym.lower()
+            piece = Piece(eval(sym.upper()), self.side, loc)
+        assert(self.hands[sym])
         self.hands[sym] -= 1
+        if(self.hands[sym] == 0):
+            del self.hands[sym]
+
         return piece 
-   
+
+
     def do_move(self, move):
         assert(len(move) == 4 or len(move) == 5)
         if(move[1] == '*'):
@@ -296,14 +365,27 @@ class Board():
                self.do_promote(lc2) 
         self.side ^= 1 
         self.move_count += 1
-        self.possible[0] = self.cal_possible_moves(0)
-        self.possible[1] = self.cal_possible_moves(1)
+        self.possible = self.cal_possible_moves()
         self.cal_checkmate()
-        self.is_win = -1
-       # if(self.is_checkmate):
-            
+        self.check_win()
 
         return self.output_usi() 
+
+    def check_win(self):
+        if self.is_checkmate:
+            self.is_win = True
+            tmp_pos = {}
+            for lc in self.possible[self.side]:
+                tmp = []
+                for move in self.possible[self.side][lc]:
+                    if not self.simulate_move(lc, move):
+                        tmp.append(move)
+                        self.is_win = False
+                if tmp != []:
+                    tmp_pos[lc] = tmp
+            self.possible[self.side] = tmp_pos
+            if self.is_win:
+                self.winer = self.side ^ 1
 
     def __str__(self):
         output = ''
@@ -445,7 +527,6 @@ def test_init():
     board.valid_move('7d')
     board.valid_move('p*')
     print(board.is_checkmate)
-    print(board.cal_possible_moves(w))
     # do eat piece 
     board.do_move('9d9e')
     print(board.output_usi())
@@ -456,6 +537,11 @@ def test_init():
     board.do_move('B*9a')
     print(board.output_usi())
     # do simple move
+    print(board)
     board.do_move('1f1g')
+    
     print(board.output_usi())
+    print(board)
+    board.init_board('1k7/1G7/pG1pBG1pp/1p2p4/NnsP2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p 125')
+    board.is_win()
 
