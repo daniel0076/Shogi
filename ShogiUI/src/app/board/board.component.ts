@@ -17,14 +17,19 @@ export class BoardComponent implements OnInit {
   private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
-
-  private gameStateObserver = {
-    next: gameState => { this.parseGameState(gameState);},
+  private usiObserver = {
+    next: usi => { this.usi = usi; this.parseUSI(usi); },
+    error: err => console.error('Observer got an error: ' + err),
+    complete: () => console.log('Observer got a complete notification'),
+  };
+  private turnObserver = {
+    next: turn => { this.myTurn = turn; this.parseUSI(this.usi) },
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
 
-  constructor(private boardService: BoardService, private modalService: NzModalService) { }
+
+  constructor(private boardService: BoardService) { }
 
   ngOnInit() {
     this.gameState$.subscribe(this.gameStateObserver);
@@ -46,6 +51,7 @@ export class BoardComponent implements OnInit {
     }
   }
 
+<<<<<<< HEAD
   parseGameState(gameState: GameStateModel) {
     if(this.turn === undefined){
       this.showModal('棋局開始', '');
@@ -54,6 +60,18 @@ export class BoardComponent implements OnInit {
     }
     this.turn = gameState.turn;
     this.parseUSI(gameState.usi);
+=======
+  usi_encode(rowIndex: number, colIndex: number): string {
+    let usi_position: string = "";
+    if (this.myTurn === 0) { // first hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+      usi_position = (9 - colIndex).toString() + rowNote[rowIndex];
+    } else if (this.myTurn === 1) { // second hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'].reverse();
+      usi_position = (colIndex + 1).toString() + rowNote[rowIndex];
+    }
+    return usi_position;
+>>>>>>> feat(move): add move piece on board
   }
 
   parseUSI(usi: string){
