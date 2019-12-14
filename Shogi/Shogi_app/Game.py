@@ -2,6 +2,7 @@ import json
 import time
 
 import Shogi_app.ShogiBoard as ShogiBoard
+from Shogi_app.UserInfoManager import UserInfoManagerSingleton
 
 from Shogi_app.models import GameHistory
 from django.db.models import Q
@@ -21,7 +22,8 @@ class Game:
         self.history_board = [self.board.output_usi()]
         self.history_move  = []
         self.record_move   = []
-        self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime())[0], 
+        self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime()), 
+        self.start_time_str= self.start_time_str[0]
         self.start_time    = time.time()
 
     def __str__(self):
@@ -48,7 +50,7 @@ class Game:
         if (len(self.record_move) < self.round):
             # No next move
             return False
-        self.move(self.record_move[self.reound - 1])
+        self.move(self.record_move[self.round - 1])
         return True
 
     def surrender(self, data):
@@ -68,8 +70,8 @@ class Game:
                              init_usi = self.history_board[0], 
                              moves = json.dumps(self.history_move))
         record.save()
-        # del self
-        # set user info manager user not in game
+        UserInfoManagerSingleton.update_ingame(self.user1_id, False)
+        UserInfoManagerSingleton.update_ingame(self.user2_id, False)
 
     def setRecord(self, data):
         r = GameHistory.objects.filter(id = data).values()[0]
@@ -79,9 +81,7 @@ class Game:
         self.winner    = 0
         self.history_board = [self.board.output_usi()]
         self.history_move  = []
-        self.record_move   = r['moves']
-        self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime()), 
-        self.start_time    = time.time()
+        self.record_move   = json.loads(r['moves'])
 
     def update(self, data):
         if data['type'] == 'move':
@@ -98,13 +98,16 @@ class Game:
 
         if data['type'] == 'surrender':
             self.surrender(data['content'])
+            self.send_game_status()
 
         # only in single game
         if data['type'] == 'exit':
             self.exit()
+            self.send_game_status()
         
         if data['type'] == 'setRecord':
             self.setRecord(data['content'])
+            self.send_game_status()
 
     def send_game_status(self):
         data = {}
@@ -166,5 +169,5 @@ class Record(Game):
         self.send_records()
 
     def update(self, data):
-        if data['type'] == 'prev' or data['type'] == 'next' or data['type'] == 'exit': 
+        if data['type'] == 'prev' or data['type'] == 'next' or data['type'] == 'exit' or data['type'] == 'setRecord': 
             super().update(data)

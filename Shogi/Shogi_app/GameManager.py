@@ -3,6 +3,7 @@ import threading
 import time
 
 import Shogi_app.Game as Game
+from Shogi_app.UserInfoManager import UserInfoManagerSingleton
 
 class GameManager:
     def __init__(self):
@@ -13,16 +14,22 @@ class GameManager:
         self.online_game     = -1
 
     def new_game(self, data, user_id, ws):
+        if UserInfoManagerSingleton.is_ingame(user_id):
+            return
+
         if data['type'] == 'single':
+            UserInfoManagerSingleton.update_ingame(user_id, True)
             game_obj = Game.Single(user_id, ws)
             return game_obj
 
         if data['type'] == 'record':
+            UserInfoManagerSingleton.update_ingame(user_id, True)
             game_obj = Game.Record(user_id, ws)
             return game_obj
 
         if data['type'] == 'online':
             self.online_lock.acquire()
+            UserInfoManagerSingleton.update_ingame(user_id, True)
             if (self.online_status == 0):
                 self.online_user1_id = user_id
                 self.online_user1_ws = ws

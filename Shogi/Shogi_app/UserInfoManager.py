@@ -32,27 +32,29 @@ class UserInfoManager:
         return {"status": True, "errorMsg": ""}
 
     def is_online(self, i):
-        if (i > MAXUSER):
+        if i > MAXUSER or i < 0:
             return False
         else:
             return self.online_status[i]
 
     def update_online(self, i, status):
-        if (i > MAXUSER):
+        if i > MAXUSER or i < 0:
             return
         else:
             self.online_status[i] = status
 
     def is_ingame(self, i):
-        if (i > MAXUSER):
+        if i > MAXUSER or i < 0:
             return False
         else:
             return self.ingame_status[i]
 
     def update_ingame(self, i, status):
-        if (i > MAXUSER):
+        if i > MAXUSER or i < 0:
             return
         else:
             self.ingame_status[i] = status
+
+    # TODO: setting
 
 UserInfoManagerSingleton = UserInfoManager()

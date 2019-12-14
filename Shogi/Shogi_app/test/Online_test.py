@@ -17,8 +17,8 @@ def send2(text):
     result =  ws2.recv()
     print("2=> '%s'" % result)
 
-send1('{"type": "login"}')
-send2('{"type": "login"}')
+send1('{"type": "login", "content":{"username": "test", "password": "password"}}')
+send2('{"type": "login", "content":{"username": "test2", "password": "password"}}')
 
 ws1.send('{"type": "game", "content":{"type": "online"}}')
 
