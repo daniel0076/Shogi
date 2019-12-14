@@ -19,17 +19,6 @@ export class GameService {
     this.store.dispatch(new Game.SetTurn(1));
   }
 
-  move() {
-    const event = new SendWebSocketMessage({
-      type: 'move',
-      content: {
-        type: 'move',
-        content: '9g9f#'
-      }
-    });
-    this.store.dispatch(event);
-  }
-
   hist() {
     const event = new SendWebSocketMessage({
       type: 'game',

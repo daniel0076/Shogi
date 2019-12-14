@@ -39,7 +39,7 @@ registerLocaleData(en);
       GameState
     ]),
     NgxsWebsocketPluginModule.forRoot({
-      url: 'ws://10.5.4.76:8000/ws/'
+      url: 'ws://127.0.0.1:8000/ws/'
     }),
     NgZorroAntdModule,
     FormsModule,

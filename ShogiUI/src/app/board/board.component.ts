@@ -3,6 +3,8 @@ import { Piece } from '../shared/piece/piece.interface';
 import { GameState } from '../game/store/game.state';
 import { Observable } from 'rxjs';
 import { Select } from '@ngxs/store';
+import { BoardService } from './board.service';
+import { PieceState } from './board.interface';
 
 @Component({
   selector: 'app-board',
@@ -15,6 +17,7 @@ export class BoardComponent implements OnInit {
   private usi: string;
   private myTurn: number;
   private board: Piece[][] = [];
+  private pieceState: PieceState = { selected: false, usi_position: "" };
   private usiObserver = {
     next: usi => { this.usi = usi; this.parseUSI(usi); },
     error: err => console.error('Observer got an error: ' + err),
@@ -27,15 +30,39 @@ export class BoardComponent implements OnInit {
   };
 
 
-  constructor() { }
+  constructor(private boardService: BoardService) { }
 
   ngOnInit() {
     this.usi$.subscribe(this.usiObserver);
     this.turn$.subscribe(this.turnObserver);
   }
 
-  cellClicked(event: Event) {
-    console.log(event);
+  cellClicked(rowIndex: number, colIndex: number) {
+    if(this.pieceState.selected){
+      // check valid move
+      let usi_move = this.pieceState.usi_position;
+      usi_move += this.usi_encode(rowIndex, colIndex);
+      // send
+      this.boardService.movePiece(usi_move);
+      //reset state
+      this.pieceState.selected = false;
+      this.pieceState.usi_position = "";
+    } else {
+      this.pieceState.selected = true;
+      this.pieceState.usi_position = this.usi_encode(rowIndex, colIndex);
+    }
+  }
+
+  usi_encode(rowIndex: number, colIndex: number): string {
+    let usi_position: string = "";
+    if (this.myTurn === 0) { // first hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+      usi_position = (9 - colIndex).toString() + rowNote[rowIndex];
+    } else if (this.myTurn === 1) { // second hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'].reverse();
+      usi_position = (colIndex + 1).toString() + rowNote[rowIndex];
+    }
+    return usi_position;
   }
 
   parseUSI(usi: string){
