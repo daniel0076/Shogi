@@ -1,15 +1,9 @@
-import { GameState } from '../game.interface';
 
 export namespace Game {
 
     export class UpdateGameState {
         static readonly type = '[Game] Update Game State';
         constructor(public gameState: any|object) { }
-    }
-
-    export class UpdateUSI {
-        static readonly type = '[Game] Update USI';
-        constructor(public usi: string) { }
     }
 
     export class ResetGame {
@@ -26,5 +20,4 @@ export namespace Game {
         static readonly type = '[Game] Select Record';
         constructor(public input: any) { }
     }
-
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { NzModalService } from 'ng-zorro-antd/modal';
 import { Piece } from '../shared/piece/piece.interface';
-import { GameState } from '../game/store/game.state';
+import { GameState, GameStateModel } from '../game/store/game.state';
 import { Observable } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
@@ -12,29 +13,21 @@ import { PieceState } from './board.interface';
   styleUrls: ['./board.component.less']
 })
 export class BoardComponent implements OnInit {
-  @Select(GameState.getUSI) usi$: Observable<string[]>;
-  @Select(GameState.getTurn) turn$: Observable<number>;
-  private usi: string;
-  private myTurn: number;
+  @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
+  private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
-  private usiObserver = {
-    next: usi => { this.usi = usi; this.parseUSI(usi); },
-    error: err => console.error('Observer got an error: ' + err),
-    complete: () => console.log('Observer got a complete notification'),
-  };
-  private turnObserver = {
-    next: turn => { this.myTurn = turn; this.parseUSI(this.usi) },
+
+  private gameStateObserver = {
+    next: gameState => { this.parseGameState(gameState);},
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
 
-
-  constructor(private boardService: BoardService) { }
+  constructor(private boardService: BoardService, private modalService: NzModalService) { }
 
   ngOnInit() {
-    this.usi$.subscribe(this.usiObserver);
-    this.turn$.subscribe(this.turnObserver);
+    this.gameState$.subscribe(this.gameStateObserver);
   }
 
   cellClicked(rowIndex: number, colIndex: number) {
@@ -53,19 +46,18 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  usi_encode(rowIndex: number, colIndex: number): string {
-    let usi_position: string = "";
-    if (this.myTurn === 0) { // first hand
-      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-      usi_position = (9 - colIndex).toString() + rowNote[rowIndex];
-    } else if (this.myTurn === 1) { // second hand
-      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'].reverse();
-      usi_position = (colIndex + 1).toString() + rowNote[rowIndex];
+  parseGameState(gameState: GameStateModel) {
+    if(this.turn === undefined){
+      this.showModal('棋局開始', '');
+    } else {
+      this.showModal('玩家交換', '起手無回');
     }
-    return usi_position;
+    this.turn = gameState.turn;
+    this.parseUSI(gameState.usi);
   }
 
   parseUSI(usi: string){
+    console.log(usi);
     if (!usi) {
       return;
     }
@@ -78,13 +70,26 @@ export class BoardComponent implements OnInit {
       this.board.push(this.parsePieces(row));
     }
 
-    if (this.myTurn === 1) {
+    if (this.turn === 1) {  // for opposite player
       this.board = this.board.reverse();
       for (let row of this.board) {
         row = row.reverse();
       }
     }
   }
+
+  usi_encode(rowIndex: number, colIndex: number): string {
+    let usi_position: string = "";
+    if (this.turn === 0) { // first hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
+      usi_position = (9 - colIndex).toString() + rowNote[rowIndex];
+    } else if (this.turn === 1) { // second hand
+      let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'].reverse();
+      usi_position = (colIndex + 1).toString() + rowNote[rowIndex];
+    }
+    return usi_position;
+  }
+
 
   parsePieces(row: string): Piece[] {
     let pieces: Piece[] = [];
@@ -109,8 +114,17 @@ export class BoardComponent implements OnInit {
       }
       i++;
     }
-
     return pieces;
+  }
+
+  showModal(title: string, content: string): void {
+    const modal = this.modalService.create({
+      nzTitle: title,
+      nzFooter: null,
+      nzContent: content
+    });
+
+    setTimeout(() => modal.destroy(), 1000);
   }
 
 }

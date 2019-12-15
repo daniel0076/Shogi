@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngxs/store';
 import { GameService } from './game.service';
-import { Game } from './store/game.actions';
 
 @Component({
   selector: 'app-game',
@@ -23,10 +21,7 @@ export class GameComponent implements OnInit {
     this.gameService.turn();
   }
 
-  move() {
+  startGame(gameType){
+    this.gameService.startGame(gameType);
   }
-
-  hist() {
-  }
-
 }

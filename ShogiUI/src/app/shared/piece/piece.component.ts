@@ -9,6 +9,7 @@ import { Piece } from './piece.interface';
 export class PieceComponent implements OnInit {
   @Input() piece: Piece;
   @Input() turn: number;
+
   private static upwardPieceImage = {
     "K": "sgl01.png",
     "k": "sgl11.png",
@@ -60,7 +61,6 @@ export class PieceComponent implements OnInit {
 
         } else {  // others are all encoded in upper case
           return PieceComponent.downwardPieceImage[key.toUpperCase()];
-
         }
       }
     } else if (this.turn === 1) { // second hand, usi in lower case

@@ -1,9 +1,11 @@
-# Directorys
+# Directories
 __pycache__/
 .ropeproject/
+migrations/
 
 # Generic stuff we don't want
-*.db
+
+db.*
 .*.swp
 *.log
 *.pickle

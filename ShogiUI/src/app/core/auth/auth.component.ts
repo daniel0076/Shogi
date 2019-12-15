@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
-import { Store } from '@ngxs/store';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -8,22 +8,47 @@ import { Store } from '@ngxs/store';
   styleUrls: ['./auth.component.less']
 })
 export class AuthComponent implements OnInit{
-  validateForm: FormGroup;
+  loginForm: FormGroup;
+  regForm: FormGroup;
 
   submitForm(): void {
-    for (const i in this.validateForm.controls) {
-      this.validateForm.controls[i].markAsDirty();
-      this.validateForm.controls[i].updateValueAndValidity();
+    for (const i in this.loginForm.controls) {
+      this.loginForm.controls[i].markAsDirty();
+      this.loginForm.controls[i].updateValueAndValidity();
     }
   }
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private authService: AuthService) {}
+
+  regVisible = false;
+
+  showReg(): void {
+    this.regVisible = true;
+  }
+
+  handleLogin(): void {
+    this.authService.login(this.loginForm.value);
+  }
+
+  handleRegister(): void {
+    this.authService.register(this.regForm.value);
+    this.regVisible = false;
+  }
+
+  handleCancel(): void {
+    console.log('Button cancel clicked!');
+    this.regVisible = false;
+  }
 
   ngOnInit(): void {
-    this.validateForm = this.fb.group({
+    this.loginForm = this.fb.group({
       userName: [null, [Validators.required]],
-      password: [null, [Validators.required]],
-      remember: [true]
+      password: [null, [Validators.required]]
+    });
+
+    this.regForm = this.fb.group({
+      userName: [null, [Validators.required]],
+      password: [null, [Validators.required]]
     });
   }
 }

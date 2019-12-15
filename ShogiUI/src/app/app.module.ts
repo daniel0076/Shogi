@@ -20,6 +20,7 @@ import { SharedModule } from './shared/shared.module';
 import { GameComponent } from './game/game.component';
 
 import { GameState } from './game/store/game.state';
+import { AuthState } from './core/auth/store/auth.state';
 
 registerLocaleData(en);
 
@@ -36,7 +37,8 @@ registerLocaleData(en);
     BrowserModule,
     AppRoutingModule,
     NgxsModule.forRoot([
-      GameState
+      GameState,
+      AuthState
     ]),
     NgxsWebsocketPluginModule.forRoot({
       url: 'ws://127.0.0.1:8000/ws/'

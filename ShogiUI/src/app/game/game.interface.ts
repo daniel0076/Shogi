@@ -1,4 +1,2 @@
-export interface GameState {
-    usi: string;
-    role: boolean;
+export interface GameControl {
 }

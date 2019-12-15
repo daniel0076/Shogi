@@ -29,4 +29,17 @@ export class GameService {
     this.store.dispatch(event);
   }
 
+  startGame(gameType: string) {
+    const event = new SendWebSocketMessage(
+      {
+        type: "game",
+        content: {
+          type: gameType
+        }
+      }
+    );
+    this.store.dispatch(event);
+
+  }
+
 }

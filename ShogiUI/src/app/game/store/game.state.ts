@@ -1,11 +1,18 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { produce, Draft } from 'immer';
 import { Game } from './game.actions';
+import { GameControl } from '../game.interface';
 
 export interface GameStateModel {
-  usi: string;
-  turn: number;  // 先手、後手
-  round: number;
+    usi: string;
+    checkmater: [];
+    isCheckmate: boolean;
+    isFinish: boolean;
+    round: number;
+    turn: number;
+    territory: object;
+    winner: any;
+    validMove: object;
 }
 
 @State<GameStateModel>({
@@ -14,6 +21,11 @@ export interface GameStateModel {
 
 export class GameState{
   constructor() { }
+
+  @Selector()
+  static getGameState(state: GameStateModel): GameStateModel {
+    return state;
+  }
 
   @Selector()
   static getUSI(state: GameStateModel): string{
@@ -25,28 +37,13 @@ export class GameState{
     return state.turn;
   }
 
-  @Selector()
-  static getRound(state: GameStateModel): number {
-    return state.round;
-  }
-
   @Action(Game.SelectRecord)
   test(ctx: StateContext<GameStateModel>, action: any) {
   }
 
-  @Action(Game.UpdateUSI)
-  updateUSI(ctx: StateContext<GameStateModel>, action: Game.UpdateUSI) {
-    ctx.setState(produce((state: Draft<GameStateModel>) => {
-      state.usi = action.usi;
-    }));
-  }
-
   @Action(Game.UpdateGameState)
   updateGameState(ctx: StateContext<GameStateModel>, action: any) {
-    ctx.setState(produce((state: Draft<GameStateModel>) => {
-      state.usi = action.content.usi;
-      state.turn = action.content.turn;
-    }));
+    ctx.setState({ ...(action.content) });
   }
 
   @Action(Game.ResetGame)
@@ -62,5 +59,4 @@ export class GameState{
       state.turn = action.turn;
     }));
   }
-
 }
