@@ -18,18 +18,23 @@ class UserInfoManager:
         if len(r) >= 1:
             user_id = json.loads(serializers.serialize('json', r))[0]['pk']
             if not self.is_online(user_id):
-                return {"status": True, "userId": user_id}
+                return {"type": "[Auth] Login Response",
+                        "content": {"status": True, "userId": user_id}}
                 self.update_online(user_id, True)
 
-        return {"status": False, "userId": -1}
+        return {"type": "[Auth] Login Response",
+                "content": {"status": False, "userId": -1}}
 
     def register(self, data):
         r = UserAccount.objects.filter(username = data['username'])
         if len(r) >= 1:
-            return {"status": False, "errorMsg": "username already be used"}
+            return {"type": "[Auth] Register Response",
+                    "content": {"status": False, 
+                                "errorMsg": "Username already be used"}}
         record = UserAccount(username = data['username'], password = data['password'])
         record.save()
-        return {"status": True, "errorMsg": ""}
+        return {"type": "[Auth] Register Response",
+                "content": {"status": True, "errorMsg": ""}}
 
     def is_online(self, i):
         if i > MAXUSER or i < 0:
