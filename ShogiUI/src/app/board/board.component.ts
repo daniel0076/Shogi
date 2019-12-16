@@ -47,6 +47,7 @@ constructor(private boardService: BoardService, private modalService: NzModalSer
   }
 
   parseGameState(gameState: GameStateModel) {
+    console.log(gameState);
     if (gameState.turn != undefined  && this.turn === undefined) {
       this.showModal('棋局開始', '');
     } else if (gameState.turn != this.turn) {

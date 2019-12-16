@@ -84,7 +84,6 @@ export class AuthComponent implements OnInit{
   }
 
   handleCancel(): void {
-    console.log('Button cancel clicked!');
     this.regVisible = false;
   }
 

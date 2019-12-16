@@ -29,7 +29,6 @@ export class AuthState{
 
   @Action(Auth.SetLoginResponse)
   setLoginResponse(ctx: StateContext<AuthStateModel>, action: any) {
-    console.log(action);
     ctx.setState(produce((state: Draft<AuthStateModel>) => {
       state.loginResponse = action.content;
     }));
@@ -37,7 +36,6 @@ export class AuthState{
 
   @Action(Auth.SetRegisterResponse)
   setRegisterResponse(ctx: StateContext<AuthStateModel>, action: any) {
-    console.log(action);
     ctx.setState(produce((state: Draft<AuthStateModel>) => {
       state.registerResponse = action.content;
     }));
