@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from "@angular/router"
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { AuthService } from './auth.service';
+import { Select } from '@ngxs/store';
+import { AuthState } from './store/auth.state';
+import { AuthStateModel } from './store/auth.state';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-auth',
@@ -8,8 +14,19 @@ import { AuthService } from './auth.service';
   styleUrls: ['./auth.component.less']
 })
 export class AuthComponent implements OnInit{
+  @Select(AuthState.getRegisterResponse) registerResponse$: Observable<AuthStateModel>;
+  @Select(AuthState.getLoginResponse) loginResponse$: Observable<AuthStateModel>;
   loginForm: FormGroup;
   regForm: FormGroup;
+  regVisible = false;
+
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private message: NzMessageService,
+    private router: Router
+    ) {}
 
   submitForm(): void {
     for (const i in this.loginForm.controls) {
@@ -18,9 +35,41 @@ export class AuthComponent implements OnInit{
     }
   }
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
+  private registerResponseObserver = {
+    next: registerResponse => {
+      if(!registerResponse) {
+        return;
+      }
 
-  regVisible = false;
+      if(registerResponse.status){
+        this.message.create('success', '註冊成功');
+        this.regVisible = false;
+      } else {
+        this.message.create('error', registerResponse.errorMsg);
+      }
+    },
+    error: err => console.error('Observer got an error: ' + err),
+    complete: () => console.log('Observer got a complete notification'),
+  };
+
+  private loginResponseObserver = {
+    next: loginResponse => {
+      if(!loginResponse) {
+        return;
+      }
+
+      if(loginResponse.status){
+        this.message.create('success', '登入成功，二秒後自動跳轉');
+        setTimeout(() => {
+          this.router.navigate(['/game']);
+        }, 2000);
+      } else {
+        this.message.create('error', '帳號密碼錯誤，或使用者不存在');
+      }
+    },
+    error: err => console.error('Observer got an error: ' + err),
+    complete: () => console.log('Observer got a complete notification'),
+  };
 
   showReg(): void {
     this.regVisible = true;
@@ -32,7 +81,6 @@ export class AuthComponent implements OnInit{
 
   handleRegister(): void {
     this.authService.register(this.regForm.value);
-    this.regVisible = false;
   }
 
   handleCancel(): void {
@@ -50,5 +98,8 @@ export class AuthComponent implements OnInit{
       userName: [null, [Validators.required]],
       password: [null, [Validators.required]]
     });
+
+    this.registerResponse$.subscribe(this.registerResponseObserver);
+    this.loginResponse$.subscribe(this.loginResponseObserver);
   }
 }

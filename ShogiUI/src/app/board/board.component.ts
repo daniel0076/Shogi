@@ -47,17 +47,19 @@ constructor(private boardService: BoardService, private modalService: NzModalSer
   }
 
   parseGameState(gameState: GameStateModel) {
-    if(this.turn === undefined){
+    if (gameState.turn != undefined  && this.turn === undefined) {
       this.showModal('棋局開始', '');
-    } else {
+    } else if (gameState.turn != this.turn) {
       this.showModal('玩家交換', '起手無回');
     }
-    this.turn = gameState.turn;
-    this.parseUSI(gameState.usi);
+
+    setTimeout(() => {
+      this.turn = gameState.turn;
+      this.parseUSI(gameState.usi);
+    }, 1000);
   }
 
   parseUSI(usi: string){
-    console.log(usi);
     if (!usi) {
       return;
     }
