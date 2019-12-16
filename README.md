@@ -25,6 +25,7 @@ install requirements
 
 ```bash
 > pipenv install    # install python dependency
+> pipenv run pip install channels # install channels from source
 > pipenv shell  # activate virtual environment
 ```
 
@@ -32,6 +33,7 @@ Initiate Database
 
 ```bash
 > cd Shogi
+> python3 manage.py makemigrations Shogi_app
 > python3 manage.py migrate
 ```
 
@@ -39,7 +41,7 @@ Initiate Database
 
 Run backend server
 ```bash
-python3 manage.py runserver
+python3 manage.py runserver [ip:port]
 ```
 
 ### Frontend
@@ -48,7 +50,8 @@ Install dependency
 
 ```bash
 > cd ShogiUI
-> yarn install
+> yarn # or npm install
+> npm install -g @angular/cli   # install ng cli tool
 ```
 
 Run server
