@@ -38,6 +38,9 @@ class Board():
         self.possible = self.cal_possible_moves() # the possible move of the black
         self.cal_checkmate()
 
+    def output_territory(self):
+        territory = Territory(self.board, self.legal_moves())
+        return territory.output_terr() 
 
     def parse_piece(self, pieces):
         piece = []
@@ -97,8 +100,6 @@ class Board():
                     if(token.islower()):
                         token = token.upper() 
                         color = w
-                    #if(token ==) 
-                    # TODO
                     row.append(Piece(eval(token.replace('+', 'PRO_')), color, (i, j)))
                     j += 1
             board.append(row)
@@ -196,7 +197,6 @@ class Board():
         return -1
 
     def legal_moves(self):
-        # TODO the checkmate
         moves = {}
         side = 1
         if(self.side):
@@ -257,7 +257,6 @@ class Board():
                     for j in range(4-side*4, 4+side*2, side):
                         if self.board[j][i] == None:
                             pos.append(self.loc2usi((j, i)) + '#')
-
         else:
             dis = 4
             if sym == 'l':
@@ -425,6 +424,7 @@ class Rule():
             if self.valid_place(start, loc):
                 ans.append(loc)
         return ans
+
     def pawn_rule(self, loc, side): 
         locs = []
         locs.append((loc[0]+side, loc[1]))
@@ -485,7 +485,7 @@ class Rule():
 
     def rook_rule(self, loc, side):
         locs = []
-        dirs = [(0,1), (0, -1), (1, 0), (-1,0)]
+        dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
         for di in dirs:
             pos = tuple(map(sum, zip(loc, di)))
             while self.valid_place(loc, pos):
@@ -520,6 +520,47 @@ class Rule():
         lc2 = self.king_rule(loc, side)
         return list(set(lc1).union(lc2))
 
+'''
+    the output form would be three colors white, black, and gray 
+    the white means the territory belongs to the white front, the black as the same 
+    the gray means it is the neatral area
+    the output form would be same as the usi replace by w, b, g
+'''
+class Territory():
+    def __init__(self, board, legal_moves):
+        self.board = board
+        self.legal_moves = legal_moves
+        self.territory = [[0 for i in range(9)] for j in range(9)]
+        self.cal_overlap()
+    
+    def usi2loc(self, lc):
+        return (ord(lc[1])- ord('a'), 9-int(lc[0]))  
+
+    def cal_overlap(self):
+        valid_move = self.legal_moves
+        for lc in valid_move:
+            if lc[1] != '*':
+                loc = self.usi2loc(lc)
+                side = self.board[loc[0]][loc[1]].sign_side()
+                for move in valid_move[lc]:
+                    loc2 = self.usi2loc(move)
+                    self.territory[loc2[0]][loc2[1]] += side
+        return 
+
+
+    def output_terr(self):
+        board = [''] * 9
+        for i in range(9):
+            for j in range(9): 
+                if(self.territory[i][j] > 0):
+                   board[i] += 'W' 
+                elif(self.territory[i][j] < 0):
+                   board[i] += 'B' 
+                else:
+                   board[i] += 'G' 
+        board = '/'.join(board)
+        return  board
+
     
 def test_init():
     init = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
@@ -536,6 +577,7 @@ def test_init():
     # do put piece 
     print(board.output_usi())
     board.do_move('B*9a')
+    print(board.output_territory())
     print(board.output_usi())
     # do simple move
     print(board)
@@ -544,5 +586,4 @@ def test_init():
     print(board.output_usi())
     print(board)
     board.init_board('1k7/1G7/pG1pBG1pp/1p2p4/NnsP2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p 125')
-    board.is_win()
-
+    board.is_win
