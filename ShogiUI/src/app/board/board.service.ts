@@ -10,6 +10,7 @@ export class BoardService {
   constructor(private store: Store) { }
 
   movePiece(usi_move: string) {
+    console.log(usi_move)
     const event = new SendWebSocketMessage({
       type: 'move',
       content: {
