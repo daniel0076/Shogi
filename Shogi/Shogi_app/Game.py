@@ -121,8 +121,7 @@ class Game:
         data['content']['validMove']   = self.board.legal_moves()
         data['content']['isCheckmate'] = self.board.is_checkmate
         data['content']['checkmater']  = self.board.checkmater
-        data['content']['territory']   = ''
-        # Wait territory API
+        data['content']['territory']   = self.board.output_territory()
 
         if (self.user1_id == self.user2_id):
             data['content']['turn']        = self.round % 2

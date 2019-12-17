@@ -13,10 +13,10 @@ send('{"type": "login", "content":{"username":"test", "password":"password"}}')
 
 send('{"type": "game", "content":{"type": "record"}}')
 
-send('{ "type": "move", "content":{"type":"setRecord", "content":21}}')
+send('{ "type": "move", "content":{"type":"setRecord", "content":1}}')
 send('{ "type": "move", "content":{"type":"exit"}}')
 
 send('{"type": "game", "content":{"type": "record"}}')
 
-send('{ "type": "move", "content":{"type":"setRecord", "content":21}}')
+send('{ "type": "move", "content":{"type":"setRecord", "content":1}}')
 send('{ "type": "move", "content":{"type":"exit"}}')

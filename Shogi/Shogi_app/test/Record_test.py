@@ -13,7 +13,7 @@ send('{"type": "login", "content":{"username":"test", "password":"password"}}')
 
 send('{"type": "game", "content":{"type": "record"}}')
 
-send('{ "type": "move", "content":{"type":"setRecord", "content":21}}')
+send('{ "type": "move", "content":{"type":"setRecord", "content":1}}')
 send('{ "type": "move", "content":{"type":"next"}}')
 send('{ "type": "move", "content":{"type":"next"}}')
 send('{ "type": "move", "content":{"type":"prev"}}')
