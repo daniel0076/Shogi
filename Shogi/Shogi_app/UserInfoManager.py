@@ -2,7 +2,7 @@ import json
 import threading
 import time
 
-from Shogi_app.models import UserAccount
+from Shogi_app.models import UserAccount, UserSettings
 from django.db.models import Q
 from django.core import serializers
 
@@ -29,7 +29,7 @@ class UserInfoManager:
         r = UserAccount.objects.filter(username = data['username'])
         if len(r) >= 1:
             return {"type": "[Auth] Register Response",
-                    "content": {"status": False, 
+                    "content": {"status": False,    
                                 "errorMsg": "Username already be used"}}
         record = UserAccount(username = data['username'], password = data['password'])
         record.save()
@@ -60,6 +60,23 @@ class UserInfoManager:
         else:
             self.ingame_status[i] = status
 
-    # TODO: setting
+    def load_settings(self, user_id):
+        r = UserSettings.objects.filter(userId = user_id)
+        if (len(r) >= 1):
+            return json.loads(r.values()[0]['settings'])
+        else:
+            return {}
 
+    def save_settings(self, user_id, data):
+        r = UserSettings.objects.filter(userId = user_id)
+        UserSettings.objects.filter(id = r.values()[0]['id']).update(settings = json.dumps(data))
+
+    def get_settings(self, user_id):
+        return self.load_settings(user_id)
+
+    def update_settings(self, user_id, data):
+        data_pre = self.load_settings(user_id)
+        data_pre.update(data)
+        self.save_settings(user_id, data_pre)
+        
 UserInfoManagerSingleton = UserInfoManager()

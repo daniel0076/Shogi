@@ -23,3 +23,13 @@ class UserAccount(models.Model):
     def __unicode__(self):
         return self.id
 
+class UserSettings(models.Model):
+    userId   = models.IntegerField()
+    settings = models.TextField()
+
+    objects = UserManager()
+    
+    def __unicode__(self):
+        return self.id
+
+

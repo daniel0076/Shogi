@@ -41,9 +41,12 @@ class Gateway(WebsocketConsumer):
                 # pass data to the game
                 self.game.update(msg['content'])
     
-            elif msg['type'] == "set":
-                # do setting
-                pass
+            elif msg['type'] == "get_settings":
+                self.send(json.dumps(UserInfoManagerSingleton.get_settings(self.user_id)))
+
+            elif msg['type'] == "update_settings":
+                UserInfoManagerSingleton.update_settings(self.user_id, msg['content'])
+                self.send(json.dumps(UserInfoManagerSingleton.get_settings(self.user_id)))
 
             else:
                 print("invalid request type %s" % msg['type'])
