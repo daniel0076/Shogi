@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
+import { NzMessageService } from 'ng-zorro-antd/message';
 import { Piece } from '../shared/piece/piece.interface';
 import { GameState, GameStateModel } from '../game/store/game.state';
 import { Observable } from 'rxjs';
@@ -17,6 +18,7 @@ export class BoardComponent implements OnInit {
   private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
+  private validMove: Object = {};
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -24,25 +26,58 @@ export class BoardComponent implements OnInit {
     complete: () => console.log('Observer got a complete notification'),
   };
 
-constructor(private boardService: BoardService, private modalService: NzModalService) { }
+  constructor(
+    private boardService: BoardService,
+    private modalService: NzModalService,
+    private message: NzMessageService,
+  ) { }
 
   ngOnInit() {
     this.gameState$.subscribe(this.gameStateObserver);
   }
 
   cellClicked(rowIndex: number, colIndex: number) {
-    if(this.pieceState.selected){
+    // check valid move
+
+    if (!this.pieceState.selected) {  // select source
+      let pieceUSI = this.usi_encode(rowIndex, colIndex);  // piece position in USI
+
+      if (!this.validMove[pieceUSI]) {  // can't move this piece
+        this.message.create('error', '那不是你的棋!');
+        return;
+      }
+
+      this.pieceState.selected = true;
+      this.pieceState.usi_position = pieceUSI;
+    }
+    else if(this.pieceState.selected){  // select destination
+
+      let sourceUSI = this.pieceState.usi_position;
+      let destinationUSI = this.usi_encode(rowIndex, colIndex);
+
+      if( destinationUSI == sourceUSI){ // cancel select
+        this.pieceState.selected = false;
+        this.pieceState.usi_position = "";
+        return
+      }
       // check valid move
-      let usi_move = this.pieceState.usi_position;
-      usi_move += this.usi_encode(rowIndex, colIndex);
+      for (let validPos of this.validMove[sourceUSI]) {
+        let found: boolean = false;
+        if(validPos.includes(destinationUSI)){
+          found = true;
+          break;
+        }
+        this.message.create('error', '無法走到那');
+        return;
+
+      }
+
+      let usi_move = sourceUSI + destinationUSI;
       // send
       this.boardService.movePiece(usi_move);
       //reset state
       this.pieceState.selected = false;
       this.pieceState.usi_position = "";
-    } else {
-      this.pieceState.selected = true;
-      this.pieceState.usi_position = this.usi_encode(rowIndex, colIndex);
     }
   }
 
@@ -56,6 +91,7 @@ constructor(private boardService: BoardService, private modalService: NzModalSer
 
     setTimeout(() => {
       this.turn = gameState.turn;
+      this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
     }, 1000);
   }
