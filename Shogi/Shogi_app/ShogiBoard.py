@@ -16,7 +16,6 @@ class Board():
         self.side = side
         self.is_checkmate = False
         self.checkmater = []
-        self.possible = [None, None]
         self.possible = self.cal_possible_moves()
         self.cal_checkmate()
         self.winner = None
@@ -34,7 +33,6 @@ class Board():
         self.move_count = move_count
         self.side = side
         self.is_checkmate = False
-        self.possible = [None, None]
         self.possible = self.cal_possible_moves() # the possible move of the black
         self.cal_checkmate()
 
@@ -283,7 +281,7 @@ class Board():
                         moves[(i, j)] = self.get_possible((i,j), sign_side)
             for piece in self.hands:
                 if (piece.islower() and side) or (piece.isupper() and not side):
-                    if self.hands[piece] == 0:
+                    if self.hands[piece] != 0:
                         moves[piece+'*']= self.valid_move(piece+'*')
             possible.append(moves) 
                 
