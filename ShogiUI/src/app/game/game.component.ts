@@ -9,6 +9,7 @@ import { GameService } from './game.service';
 export class GameComponent implements OnInit {
 
   constructor(private gameService: GameService) { }
+  private gameType: string;
 
   ngOnInit() {
   }
@@ -22,6 +23,7 @@ export class GameComponent implements OnInit {
   }
 
   startGame(gameType){
+    this.gameType = gameType;
     this.gameService.startGame(gameType);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Piece } from '../shared/piece/piece.interface';
@@ -14,6 +14,7 @@ import { PieceState } from './board.interface';
   styleUrls: ['./board.component.less']
 })
 export class BoardComponent implements OnInit {
+  @Input() gameType: string;
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
   private turn: number
   private board: Piece[][] = [];
@@ -40,7 +41,7 @@ export class BoardComponent implements OnInit {
     // check valid move
 
     if (!this.pieceState.selected) {  // select source
-      let pieceUSI = this.usi_encode(rowIndex, colIndex);  // piece position in USI
+      let pieceUSI = this.usi_encode(rowIndex, colIndex, false);  // piece position in USI
 
       if (!this.validMove[pieceUSI]) {  // can't move this piece
         this.message.create('error', '那不是你的棋!');
@@ -53,7 +54,7 @@ export class BoardComponent implements OnInit {
     else if(this.pieceState.selected){  // select destination
 
       let sourceUSI = this.pieceState.usi_position;
-      let destinationUSI = this.usi_encode(rowIndex, colIndex);
+      let destinationUSI = this.usi_encode(rowIndex, colIndex, false);
 
       if( destinationUSI == sourceUSI){ // cancel select
         this.pieceState.selected = false;
@@ -90,7 +91,11 @@ export class BoardComponent implements OnInit {
     }
 
     setTimeout(() => {
-      this.turn = gameState.turn;
+      if (this.gameType != 'single') {
+        this.turn = gameState.turn;
+      } else {
+        this.turn = 0;
+      }
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
     }, 1000);
@@ -109,20 +114,27 @@ export class BoardComponent implements OnInit {
       this.board.push(this.parsePieces(row));
     }
 
-    if (this.turn === 1) {  // for opposite player
-      this.board = this.board.reverse();
-      for (let row of this.board) {
-        row = row.reverse();
+    if (this.gameType != 'single') {
+      // turn the side of board
+      if (this.turn === 1) { 
+        this.board = this.board.reverse();
+        for (let row of this.board) {
+          row = row.reverse();
+        }
       }
     }
   }
 
-  usi_encode(rowIndex: number, colIndex: number): string {
+  parseHandPiece(usi: string){
+
+  }
+
+  usi_encode(rowIndex: number, colIndex: number, reversed: boolean): string {
     let usi_position: string = "";
-    if (this.turn === 0) { // first hand
+    if (!reversed) { // first hand
       let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
       usi_position = (9 - colIndex).toString() + rowNote[rowIndex];
-    } else if (this.turn === 1) { // second hand
+    } else if (reversed) { // second hand
       let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'].reverse();
       usi_position = (colIndex + 1).toString() + rowNote[rowIndex];
     }
