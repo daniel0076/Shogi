@@ -10,7 +10,7 @@ export interface GameStateModel {
     isFinish: boolean;
     round: number;
     turn: number;
-    territory: object;
+    territory: string;
     winner: any;
     validMove: object;
 }

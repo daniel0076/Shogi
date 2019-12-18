@@ -22,6 +22,7 @@ export class BoardComponent implements OnInit {
   private validMove: Object = {};
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
+  private territory: string[][] = [];
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -53,12 +54,12 @@ export class BoardComponent implements OnInit {
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
     }
-    else if(this.pieceState.selected){  // select destination
+    else if (this.pieceState.selected) {  // select destination
 
       let sourceUSI = this.pieceState.usi_position;
       let destinationUSI = this.usi_encode(rowIndex, colIndex, this.turn);
 
-      if( destinationUSI == sourceUSI){ // cancel select
+      if (destinationUSI == sourceUSI) { // cancel select
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
         return
@@ -66,7 +67,7 @@ export class BoardComponent implements OnInit {
       // check valid move
       for (let validPos of this.validMove[sourceUSI]) {
         let found: boolean = false;
-        if(validPos.includes(destinationUSI)){
+        if (validPos.includes(destinationUSI)) {
           found = true;
           break;
         }
@@ -84,7 +85,7 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  handPieceClicked(piece: Piece){
+  handPieceClicked(piece: Piece) {
     // check valid move
     let pieceUSI = piece.symbol + "*";
     if (!this.pieceState.selected) {  // select source
@@ -95,8 +96,8 @@ export class BoardComponent implements OnInit {
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
     }
-    else if(this.pieceState.selected){  // select destination
-      if(pieceUSI === this.pieceState.usi_position){  // reset
+    else if (this.pieceState.selected) {  // select destination
+      if (pieceUSI === this.pieceState.usi_position) {  // reset
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
       }
@@ -106,7 +107,7 @@ export class BoardComponent implements OnInit {
 
   parseGameState(gameState: GameStateModel) {
     console.log(gameState);
-    if (gameState.turn != undefined  && this.turn === undefined) {
+    if (gameState.turn != undefined && this.turn === undefined) {
       this.showModal('棋局開始', '');
     } else if (gameState.turn != this.turn) {
       this.showModal('玩家交換', '起手無回');
@@ -120,10 +121,11 @@ export class BoardComponent implements OnInit {
       }
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
+      this.parseTerritory(gameState.territory);
     }, 1000);
   }
 
-  parseUSI(usi: string){
+  parseUSI(usi: string) {
     if (!usi) {
       return;
     }
@@ -134,7 +136,7 @@ export class BoardComponent implements OnInit {
 
     let rows: string[] = board_state.split('/')
     this.board = [];
-    for(let row of rows){
+    for (let row of rows) {
       this.board.push(this.parsePieces(row));
     }
 
@@ -149,20 +151,44 @@ export class BoardComponent implements OnInit {
     }
   }
 
-  parseHandPiece(usi: string){
+  parseHandPiece(usi: string) {
     this.firstPlayerHandPieces = []
     this.secondPlayerHandPieces = [];
-    if(usi === '-'){
+    if (usi === '-') {
       return;
     }
 
-    for(let token of usi){
-      let piece: Piece = {symbol: token};
-      if(piece.symbol === piece.symbol.toLowerCase()){
+    for (let token of usi) {
+      let piece: Piece = { symbol: token };
+      if (piece.symbol === piece.symbol.toLowerCase()) {
         this.secondPlayerHandPieces.push(piece);
-      } else if (piece.symbol === piece.symbol.toUpperCase()){
+      } else if (piece.symbol === piece.symbol.toUpperCase()) {
         this.firstPlayerHandPieces.push(piece);
       }
+    }
+  }
+  parseTerritory(territory: string) {
+    this.territory = [];
+    let rows: string[] = territory.split('/');
+    for (let row of rows) {
+      let tmp_row = [];
+      for (let token of row) {
+        switch (token) {
+          case 'W':
+            tmp_row.push('white-side');
+            break;
+          case 'B':
+            tmp_row.push('black-side');
+            break;
+          case 'G':
+            tmp_row.push('neutral-side');
+            break;
+
+          default:
+            break;
+        }
+      }
+      this.territory.push(tmp_row);
     }
   }
 
@@ -183,7 +209,7 @@ export class BoardComponent implements OnInit {
   parsePieces(row: string): Piece[] {
     let pieces: Piece[] = [];
     let token: string;
-    let i= 0;
+    let i = 0;
     while (i < row.length) {
       let piece: Piece = { 'symbol': '' };
       token = row[i];
