@@ -20,6 +20,8 @@ export class BoardComponent implements OnInit {
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
   private validMove: Object = {};
+  private secondPlayerHandPieces: Piece[] = [];
+  private firstPlayerHandPieces: Piece[] = [];
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -41,7 +43,7 @@ export class BoardComponent implements OnInit {
     // check valid move
 
     if (!this.pieceState.selected) {  // select source
-      let pieceUSI = this.usi_encode(rowIndex, colIndex, false);  // piece position in USI
+      let pieceUSI = this.usi_encode(rowIndex, colIndex, this.turn);  // piece position in USI
 
       if (!this.validMove[pieceUSI]) {  // can't move this piece
         this.message.create('error', '那不是你的棋!');
@@ -54,7 +56,7 @@ export class BoardComponent implements OnInit {
     else if(this.pieceState.selected){  // select destination
 
       let sourceUSI = this.pieceState.usi_position;
-      let destinationUSI = this.usi_encode(rowIndex, colIndex, false);
+      let destinationUSI = this.usi_encode(rowIndex, colIndex, this.turn);
 
       if( destinationUSI == sourceUSI){ // cancel select
         this.pieceState.selected = false;
@@ -82,6 +84,26 @@ export class BoardComponent implements OnInit {
     }
   }
 
+  handPieceClicked(piece: Piece){
+    // check valid move
+    let pieceUSI = piece.symbol + "*";
+    if (!this.pieceState.selected) {  // select source
+      if (!this.validMove[pieceUSI]) {  // can't move this piece
+        this.message.create('error', '不合規則');
+        return;
+      }
+      this.pieceState.selected = true;
+      this.pieceState.usi_position = pieceUSI;
+    }
+    else if(this.pieceState.selected){  // select destination
+      if(pieceUSI === this.pieceState.usi_position){  // reset
+        this.pieceState.selected = false;
+        this.pieceState.usi_position = "";
+      }
+      return;
+    }
+  }
+
   parseGameState(gameState: GameStateModel) {
     console.log(gameState);
     if (gameState.turn != undefined  && this.turn === undefined) {
@@ -91,10 +113,10 @@ export class BoardComponent implements OnInit {
     }
 
     setTimeout(() => {
-      if (this.gameType != 'single') {
-        this.turn = gameState.turn;
-      } else {
+      if (this.gameType === 'single') {
         this.turn = 0;
+      } else {
+        this.turn = gameState.turn;
       }
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
@@ -107,8 +129,10 @@ export class BoardComponent implements OnInit {
     }
     let usi_tokens: string[] = usi.split(' ');
     let board_state: string = usi_tokens[0];
-    let rows: string[] = board_state.split('/')
+    let handPieces: string = usi_tokens[2];
+    this.parseHandPiece(handPieces);
 
+    let rows: string[] = board_state.split('/')
     this.board = [];
     for(let row of rows){
       this.board.push(this.parsePieces(row));
@@ -116,7 +140,7 @@ export class BoardComponent implements OnInit {
 
     if (this.gameType != 'single') {
       // turn the side of board
-      if (this.turn === 1) { 
+      if (this.turn === 1) {
         this.board = this.board.reverse();
         for (let row of this.board) {
           row = row.reverse();
@@ -126,10 +150,24 @@ export class BoardComponent implements OnInit {
   }
 
   parseHandPiece(usi: string){
+    this.firstPlayerHandPieces = []
+    this.secondPlayerHandPieces = [];
+    if(usi === '-'){
+      return;
+    }
 
+    for(let token of usi){
+      let piece: Piece = {symbol: token};
+      if(piece.symbol === piece.symbol.toLowerCase()){
+        this.secondPlayerHandPieces.push(piece);
+      } else if (piece.symbol === piece.symbol.toUpperCase()){
+        this.firstPlayerHandPieces.push(piece);
+      }
+    }
   }
 
-  usi_encode(rowIndex: number, colIndex: number, reversed: boolean): string {
+  usi_encode(rowIndex: number, colIndex: number, turn: number): string {
+    let reversed = turn ? true : false;
     let usi_position: string = "";
     if (!reversed) { // first hand
       let rowNote: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
