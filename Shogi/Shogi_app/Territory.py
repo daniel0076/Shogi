@@ -24,7 +24,7 @@ class Territory():
         for i in range(2):
             side = sides[i]
             for lc in valid_move[i]:
-                print(lc)
+                #print(lc)
                 if lc[1] != '*':
                     for move in valid_move[i][lc]:
                         self.territory[move[0]][move[1]] += side
