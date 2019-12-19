@@ -12,8 +12,6 @@ class Territory():
         self.valid_moves = valid_moves
         self.territory = [[0 for i in range(9)] for j in range(9)]
         self.cal_overlap()
-    
-
 
     def usi2loc(self, lc):
         return (ord(lc[1])- ord('a'), 9-int(lc[0]))
