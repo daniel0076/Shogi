@@ -120,7 +120,7 @@ export class SelectComponent implements OnInit {
     }, 2000);
   }
 
-  onSelect_rec(record: object): void{
+  onSelect_rec(record: any): void{
     console.log(record);
       const event = new SendWebSocketMessage(
           {
@@ -135,14 +135,14 @@ export class SelectComponent implements OnInit {
     this.navigate_game();
   }
 
-  onSelect_puz(puzzle: object): void{
+  onSelect_puz(puzzle: any): void{
     console.log(puzzle);
       const event = new SendWebSocketMessage(
           {
               type: "move",
               content: {
                   type: "setPuzzle",
-                  content: record.game_id
+                  content: puzzle.game_id
               }
           }
       );
