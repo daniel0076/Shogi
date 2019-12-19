@@ -53,6 +53,7 @@ export class BoardComponent implements OnInit {
 
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
+      this.selectPiece(rowIndex, colIndex, true);
     }
     else if (this.pieceState.selected) {  // select destination
 
@@ -62,18 +63,20 @@ export class BoardComponent implements OnInit {
       if (destinationUSI == sourceUSI) { // cancel select
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
+        this.selectPiece(rowIndex, colIndex, false);
         return
       }
       // check valid move
+      let found: boolean = false;
       for (let validPos of this.validMove[sourceUSI]) {
-        let found: boolean = false;
         if (validPos.includes(destinationUSI)) {
           found = true;
           break;
         }
+      }
+      if(!found){
         this.message.create('error', '無法走到那');
         return;
-
       }
 
       let usi_move = sourceUSI + destinationUSI;
@@ -95,14 +98,20 @@ export class BoardComponent implements OnInit {
       }
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
+      piece.selected = true;
     }
     else if (this.pieceState.selected) {  // select destination
       if (pieceUSI === this.pieceState.usi_position) {  // reset
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
+        piece.selected = false;
       }
       return;
     }
+  }
+
+  selectPiece(rowIndex: number, colIndex: number, selected: boolean){
+    this.board[rowIndex][colIndex].selected = selected;
   }
 
   parseGameState(gameState: GameStateModel) {
@@ -158,13 +167,33 @@ export class BoardComponent implements OnInit {
       return;
     }
 
-    for (let token of usi) {
-      let piece: Piece = { symbol: token };
-      if (piece.symbol === piece.symbol.toLowerCase()) {
-        this.secondPlayerHandPieces.push(piece);
-      } else if (piece.symbol === piece.symbol.toUpperCase()) {
-        this.firstPlayerHandPieces.push(piece);
+    let i = 0;
+    let token: string = "";
+    while (i < usi.length) {
+      token = usi[i];
+      if (!isNaN(Number(token))) { // isdigit
+        let count: number = Number(token);
+        i++;
+        token = usi[i];
+        if (token === token.toLowerCase()) {
+          for (let i = 0; i < count; i++) {
+            this.secondPlayerHandPieces.push(new Piece(token));
+          }
+        } else if (token === token.toUpperCase()) {
+          for (let i = 0; i < count; i++) {
+            this.firstPlayerHandPieces.push(new Piece(token));
+          }
+        }
+
+      } else if (isNaN(Number(token))) {
+        if (token === token.toLowerCase()) {
+          this.secondPlayerHandPieces.push(new Piece(token));
+        } else if (token === token.toUpperCase()) {
+          this.firstPlayerHandPieces.push(new Piece(token));
+        }
       }
+
+      i++;
     }
   }
   parseTerritory(territory: string) {
@@ -211,7 +240,7 @@ export class BoardComponent implements OnInit {
     let token: string;
     let i = 0;
     while (i < row.length) {
-      let piece: Piece = { 'symbol': '' };
+      let piece: Piece = new Piece()
       token = row[i];
       if (!isNaN(Number(token))) { // isdigit
         piece.symbol = "";
