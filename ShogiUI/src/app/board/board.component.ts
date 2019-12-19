@@ -167,13 +167,33 @@ export class BoardComponent implements OnInit {
       return;
     }
 
-    for (let token of usi) {
-      let piece: Piece = new Piece(token);
-      if (piece.symbol === piece.symbol.toLowerCase()) {
-        this.secondPlayerHandPieces.push(piece);
-      } else if (piece.symbol === piece.symbol.toUpperCase()) {
-        this.firstPlayerHandPieces.push(piece);
+    let i = 0;
+    let token: string = "";
+    while (i < usi.length) {
+      token = usi[i];
+      if (!isNaN(Number(token))) { // isdigit
+        let count: number = Number(token);
+        i++;
+        token = usi[i];
+        if (token === token.toLowerCase()) {
+          for (let i = 0; i < count; i++) {
+            this.secondPlayerHandPieces.push(new Piece(token));
+          }
+        } else if (token === token.toUpperCase()) {
+          for (let i = 0; i < count; i++) {
+            this.firstPlayerHandPieces.push(new Piece(token));
+          }
+        }
+
+      } else if (isNaN(Number(token))) {
+        if (token === token.toLowerCase()) {
+          this.secondPlayerHandPieces.push(new Piece(token));
+        } else if (token === token.toUpperCase()) {
+          this.firstPlayerHandPieces.push(new Piece(token));
+        }
       }
+
+      i++;
     }
   }
   parseTerritory(territory: string) {
