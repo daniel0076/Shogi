@@ -1,4 +1,4 @@
-<div class="board">
+<div [@select]="pieceState.selected ? 'selected' : 'unselected'" class="board">
     <table>
         <tbody>
             <tr *ngFor="let row of board; let rowIndex = index">

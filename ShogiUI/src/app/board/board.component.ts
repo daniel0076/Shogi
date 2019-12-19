@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostBinding } from '@angular/core';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Piece } from '../shared/piece/piece.interface';
 import { GameState, GameStateModel } from '../game/store/game.state';
@@ -7,8 +7,27 @@ import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
 import { PieceState } from './board.interface';
 
+import { trigger, state, style, animate, transition } from '@angular/animations';
+
 @Component({
   selector: 'app-board',
+
+//
+	animations: [
+		trigger('select', [
+			state('unselected', style({
+				opacity: 0.3
+	  	})),
+			state('selected', style({
+				opacity: 1
+			})),
+			transition('unselected => selected, selected => unselected', [
+			animate('0.5s')
+			]),
+		]),
+	],	
+//
+
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less']
 })
