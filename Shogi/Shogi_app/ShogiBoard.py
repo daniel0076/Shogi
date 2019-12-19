@@ -1,4 +1,5 @@
 from Shogi_app.Piece import Piece
+from Shogi_app.Territory import Territory
 from Shogi_app.Consts import *
 import json
 
@@ -37,7 +38,7 @@ class Board():
         self.cal_checkmate()
 
     def output_territory(self):
-        territory = Territory(self.board, self.legal_moves())
+        territory = Territory(self.possible)
         return territory.output_terr() 
 
     def parse_piece(self, pieces):
@@ -518,46 +519,6 @@ class Rule():
         lc2 = self.king_rule(loc, side)
         return list(set(lc1).union(lc2))
 
-'''
-    the output form would be three colors white, black, and gray 
-    the white means the territory belongs to the white front, the black as the same 
-    the gray means it is the neatral area
-    the output form would be same as the usi replace by w, b, g
-'''
-class Territory():
-    def __init__(self, board, legal_moves):
-        self.board = board
-        self.legal_moves = legal_moves
-        self.territory = [[0 for i in range(9)] for j in range(9)]
-        self.cal_overlap()
-    
-    def usi2loc(self, lc):
-        return (ord(lc[1])- ord('a'), 9-int(lc[0]))  
-
-    def cal_overlap(self):
-        valid_move = self.legal_moves
-        for lc in valid_move:
-            if lc[1] != '*':
-                loc = self.usi2loc(lc)
-                side = self.board[loc[0]][loc[1]].sign_side()
-                for move in valid_move[lc]:
-                    loc2 = self.usi2loc(move)
-                    self.territory[loc2[0]][loc2[1]] += side
-        return 
-
-
-    def output_terr(self):
-        board = [''] * 9
-        for i in range(9):
-            for j in range(9): 
-                if(self.territory[i][j] > 0):
-                   board[i] += 'W' 
-                elif(self.territory[i][j] < 0):
-                   board[i] += 'B' 
-                else:
-                   board[i] += 'G' 
-        board = '/'.join(board)
-        return  board
 
     
 def test_init():
