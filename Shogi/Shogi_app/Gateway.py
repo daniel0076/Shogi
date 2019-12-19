@@ -39,6 +39,7 @@ class Gateway(WebsocketConsumer):
                 
             elif msg['type'] == "move":
                 # pass data to the game
+                msg['content']['userId'] = self.user_id
                 self.game.update(msg['content'])
     
             elif msg['type'] == "get_settings":

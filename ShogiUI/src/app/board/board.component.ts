@@ -23,6 +23,7 @@ export class BoardComponent implements OnInit {
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
+  private promoteResponse: boolean = false;
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -68,7 +69,8 @@ export class BoardComponent implements OnInit {
       }
       // check valid move
       let found: boolean = false;
-      for (let validPos of this.validMove[sourceUSI]) {
+      let validPos: string = "";
+      for (validPos of this.validMove[sourceUSI]) {
         if (validPos.includes(destinationUSI)) {
           found = true;
           break;
@@ -78,10 +80,43 @@ export class BoardComponent implements OnInit {
         this.message.create('error', '無法走到那');
         return;
       }
-
+      
       let usi_move = sourceUSI + destinationUSI;
-      // send
-      this.boardService.movePiece(usi_move);
+
+      // check promotion
+      if (validPos.includes('+')) {  // can promote
+        let timer: any = undefined;
+
+        const modal = this.modalService.confirm({
+          nzTitle: "昇變",
+          nzContent: "是否要昇變?",
+          //nzOnOk: () => {this.promoteResponse = true},
+          nzOnOk: () => {
+            usi_move += "+";
+            this.boardService.movePiece(usi_move);
+            clearTimeout(timer);
+            modal.destroy()
+          },
+          nzOnCancel: () => {
+            this.boardService.movePiece(usi_move);
+            clearTimeout(timer);
+            modal.destroy()
+          }
+        });
+
+        timer = setTimeout(() => {
+          // no promote on default timeout
+          this.boardService.movePiece(usi_move);
+          modal.destroy()
+        }, 100000);
+      }
+      else if (validPos.includes('*')) {  // must promote
+        usi_move += "+";
+        this.boardService.movePiece(usi_move);
+      } else {
+        this.boardService.movePiece(usi_move);
+      }
+
       //reset state
       this.pieceState.selected = false;
       this.pieceState.usi_position = "";
