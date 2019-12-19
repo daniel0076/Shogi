@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { SelectState } from './store/select.state';
 import { SelectStateModel } from './store/select.state';
-import { Router } from '@angular/router'; 
+import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Store } from '@ngxs/store';
 import { SendWebSocketMessage } from '@ngxs/websocket-plugin';
@@ -16,7 +16,7 @@ import { SendWebSocketMessage } from '@ngxs/websocket-plugin';
 })
 
 export class SelectComponent implements OnInit {
-   
+
   @Select(SelectState.getRecordResponse) RecordResponse$:　Observable<SelectStateModel>;
   @Select(SelectState.getPuzzleResponse) PuzzleResponse$:　Observable<SelectStateModel>;
   recVisible = false;
@@ -51,12 +51,12 @@ export class SelectComponent implements OnInit {
         else{
             this.records = RecordResponse;
             console.log(this.records);
-            this.ShowRec();
+            this.showRec();
         }
     },
-    error: err => console.error('Observer got an error: ' + err), 
+    error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
-      
+
   };
 
   private PuzzleResponseOvserver = {
@@ -72,19 +72,19 @@ export class SelectComponent implements OnInit {
         else{
             this.puzzles = PuzzleResponse;
             console.log(this.puzzles);
-            this.ShowPuz();
+            this.showPuz();
         }
     },
-    error: err => console.error('Observer got an error: ' + err), 
+    error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
-      
+
   };
 
-  ShowRec(){
+  showRec(){
       this.recVisible = true;
   }
 
-  ShowPuz(){
+  showPuz(){
       this.recVisible = true;
   }
 
@@ -93,34 +93,33 @@ export class SelectComponent implements OnInit {
       this.puzVisible = false;
   }
 
-  Single(){
+  startSingleGame(){
       this.gameService.startGame("single");
-      this.navigate_game();
+      this.navigateGame("single");
   }
 
-  Online(){
+  startOnlineGame(){
       this.gameService.startGame("online");
-      this.navigate_game();
+      this.navigateGame("online");
   }
-  
-  Puzzle(){
+
+  startPuzzleGame(){
       this.gameService.startGame("puzzle");
   }
 
-  Hist(){
-      console.log('history');
+  startHistoryGame(){
       this.gameService.startGame("record");
   }
 
 
-  navigate_game(){
+  navigateGame(gameType: string){
     this.message.create('success', '二秒後遊戲開始');
     setTimeout(() =>{
-        this.router.navigate(['/game']);
+        this.router.navigate(['/game', {gameType: gameType}]);
     }, 2000);
   }
 
-  onSelect_rec(record: any): void{
+  onSelectRecord(record: any): void{
     console.log(record);
       const event = new SendWebSocketMessage(
           {
@@ -132,10 +131,10 @@ export class SelectComponent implements OnInit {
           }
       );
     this.store.dispatch(event);
-    this.navigate_game();
+    this.navigateGame("history");
   }
 
-  onSelect_puz(puzzle: any): void{
+  onSelectPuzzle(puzzle: any): void{
     console.log(puzzle);
       const event = new SendWebSocketMessage(
           {
@@ -147,7 +146,7 @@ export class SelectComponent implements OnInit {
           }
       );
     this.store.dispatch(event);
-    this.navigate_game();
+    this.navigateGame("puzzle");
   }
 
 }
