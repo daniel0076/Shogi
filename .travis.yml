@@ -14,12 +14,12 @@ matrix:
       language: shell       # 'language: python' is an error on Travis CI macOS
 
 install:
-  - "pip3 install pipenv"   # all three OSes agree about 'pip3'
+  - "pip3 install pipenv"   # all two OSes agree about 'pip3'
   - "pipenv install --dev"
   - "pipenv run pip install channels"
   - "cd Shogi"
-  - "./manage.py makemigrations Shogi_app"
-  - "./manage.py migrate"
+  - "python3 manage.py makemigrations Shogi_app"
+  - "python3 manage.py migrate"
 
-script: ./manage.py test
+script: python3 manage.py test
 
