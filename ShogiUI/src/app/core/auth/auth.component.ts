@@ -14,6 +14,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./auth.component.less']
 })
 export class AuthComponent implements OnInit{
+
   @Select(AuthState.getRegisterResponse) registerResponse$: Observable<AuthStateModel>;
   @Select(AuthState.getLoginResponse) loginResponse$: Observable<AuthStateModel>;
   loginForm: FormGroup;
@@ -61,7 +62,7 @@ export class AuthComponent implements OnInit{
       if(loginResponse.status){
         this.message.create('success', '登入成功，二秒後自動跳轉');
         setTimeout(() => {
-          this.router.navigate(['/game']);
+          this.router.navigate(['/select']);
         }, 2000);
       } else {
         this.message.create('error', '帳號密碼錯誤，或使用者不存在');
