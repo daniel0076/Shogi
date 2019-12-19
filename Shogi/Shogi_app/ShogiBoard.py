@@ -184,7 +184,7 @@ class Board():
         if pc.is_promote():
             return -1
         line = 4 + 2 * side 
-        dis = self.side * (lc2[0] - line)
+        dis = side * (lc2[0] - line)
         if dis > 0:
             if pc.get_symbol() == 'p' or pc.get_symbol() == 'l':
                 if dis > 1:
@@ -197,9 +197,9 @@ class Board():
 
     def legal_moves(self):
         moves = {}
-        side = 1
+        side = -1
         if(self.side):
-            side = -1
+            side = 1
         for lc in self.possible[self.side]:
             if self.possible[self.side][lc]:
                 if type(lc[0]) == int:
