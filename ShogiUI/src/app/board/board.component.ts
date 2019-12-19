@@ -65,15 +65,16 @@ export class BoardComponent implements OnInit {
         return
       }
       // check valid move
+      let found: boolean = false;
       for (let validPos of this.validMove[sourceUSI]) {
-        let found: boolean = false;
         if (validPos.includes(destinationUSI)) {
           found = true;
           break;
         }
+      }
+      if(!found){
         this.message.create('error', '無法走到那');
         return;
-
       }
 
       let usi_move = sourceUSI + destinationUSI;
