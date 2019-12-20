@@ -98,8 +98,9 @@ class Game:
         self.record_move   = json.loads(r['moves'])
 
     def setPuzzle(self, data):
-        r = GamePuzzle.objects.filter(id = data).values()[0]
-        self.board = ShogiBoard.Board(r['init_usi'])
+        #r = GamePuzzle.objects.filter(id = data).values()[0]
+        #self.board = ShogiBoard.Board(r['init_usi'])
+        self.board = ShogiBoard.Board('k4S2l/4+r4/G1NNp2pp/3s2p2/5s3/1PP3P2/P1KS3pp/4R1g2/LN5Nl b 8PGBbgl 0')
         self.round = 0
         self.is_finish = False
         self.winner    = 0
@@ -171,6 +172,7 @@ class Game:
         data['type'] = "[Game] Select Puzzle"
         r = GamePuzzle.objects.all()
         data['content'] = [{"game_id": x['pk'], "puzzleName": x['fields']['puzzle_name']} for x in json.loads(serializers.serialize('json', r))]
+        data['content'] = [{"game_id": 1, "puzzleName": "puzzle1"}]
         self.user1_ws.send(json.dumps(data))
 
 class Single(Game):
