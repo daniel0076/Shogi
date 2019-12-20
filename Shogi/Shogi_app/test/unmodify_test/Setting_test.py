@@ -11,5 +11,5 @@ def send(text):
 
 send('{"type": "login", "content":{"username":"test", "password":"password"}}')
 send('{"type": "get_settings"}')
-send('{"type": "update_settings", "content":{"HI":"991999"}}')
+send('{"type": "update_settings", "content":{"HI":"891999"}}')
 send('{"type": "get_settings"}')
