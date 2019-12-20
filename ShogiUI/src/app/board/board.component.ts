@@ -3,6 +3,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Piece } from '../shared/piece/piece.interface';
 import { GameState, GameStateModel } from '../game/store/game.state';
+import { GameService } from '../game/game.service';
 import { Observable, Subscription } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
@@ -35,7 +36,8 @@ export class BoardComponent implements OnInit {
     private boardService: BoardService,
     private modalService: NzModalService,
     private message: NzMessageService,
-    private router: Router
+    private router: Router,
+    private gameService: GameService
   ) { }
 
   ngOnInit() {
@@ -426,6 +428,21 @@ export class BoardComponent implements OnInit {
     return pieces;
   }
 
+  Exit(){
+    let modal = this.modalService.success({
+      nzTitle: '是否確認結束？',
+      nzOnOk: () => {
+          modal.destroy();
+          setTimeout(()=>{
+            this.router.navigate(['/select']);
+          }, 100);
+          this.gameService.exit();
+      },
+      nzOnCancel: ()=>{
+          modal.destroy();
+      }
+    });
+  }
   showModal(title: string, content: string): void {
     const modal = this.modalService.create({
       nzTitle: title,
@@ -442,6 +459,7 @@ export class BoardComponent implements OnInit {
       nzContent: '恭喜你贏了!',
       nzOnOk: () => {
           modal.destroy();
+          this.gameService.exit();
           setTimeout(()=>{
             this.router.navigate(['/select']);
           }, 100);
@@ -461,5 +479,6 @@ export class BoardComponent implements OnInit {
       }
     });
   }
+ 
 
 }

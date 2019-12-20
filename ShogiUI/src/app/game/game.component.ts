@@ -35,8 +35,8 @@ export class GameComponent implements OnInit {
     this.gameService.surrender(this.userId);
   }
 
-  exitSingle(){
-    this.gameService.exitSingle();
+  exit(){
+    this.gameService.exit();
   }
 
 }

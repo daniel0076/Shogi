@@ -27,7 +27,7 @@ export class GameService {
     this.store.dispatch(event);
   }
 
-  exitSingle() {
+  exit() {
     const event = new SendWebSocketMessage({
       type: 'move',
       content: {
