@@ -31,8 +31,10 @@ export class BoardComponent implements OnInit {
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
+	private checkmater: string[][] = [];
   private validCell: string[][] = [];
   private ori_territory: string = "";
+	private ori_checkmater: string = "";
   terrVisible = true;
   constructor(
     private boardService: BoardService,
@@ -106,7 +108,7 @@ export class BoardComponent implements OnInit {
       let x: string = "";
       let valid_pos: number[] = [];
       for (x of this.validMove[pieceUSI]) {
-        console.log(x);
+        //console.log(x);
         valid_pos = this.usi_decode(x, this.turn);
 
         this.validCell[valid_pos[0]][valid_pos[1]] = 'V';
@@ -114,7 +116,7 @@ export class BoardComponent implements OnInit {
         //		console.log(valid_pos[0]);
         //	console.log(valid_pos[1]);
 
-        console.log(this.validCell);
+        //console.log(this.validCell);
       }
 
       for (let i = 0; i < 9; ++i) {
@@ -143,6 +145,7 @@ export class BoardComponent implements OnInit {
         this.selectPiece(rowIndex, colIndex, false);
         //this.territory = original_territory;
         this.parseTerritory(this.ori_territory, this.turn);
+				this.parseCheckmater(this.ori_checkmater, this.turn)
         return
       }
       // check valid move
@@ -227,12 +230,12 @@ export class BoardComponent implements OnInit {
       let validPosUSI: string = "";
       let validPosNum: number[] = [];
       for (validPosUSI of this.validMove[pieceUSI]) {
-        console.log(validPosUSI);
+        //console.log(validPosUSI);
         validPosNum = this.usi_decode(validPosUSI, this.turn);
 
         this.validCell[validPosNum[0]][validPosNum[1]] = 'V';
 
-        console.log(this.validCell);
+        //console.log(this.validCell);
       }
 
       for (let i = 0; i < 9; ++i) {
@@ -253,6 +256,7 @@ export class BoardComponent implements OnInit {
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
         this.parseTerritory(this.ori_territory, this.turn);
+				this.parseCheckmater(this.ori_checkmater, this.turn)
         piece.selected = false;
       }
       return;
@@ -279,8 +283,11 @@ export class BoardComponent implements OnInit {
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
       this.ori_territory = gameState.territory;
+			this.ori_checkmater = gameState.checkmater.toString();
+			//console.log(gameState.checkmater);
       this.parseTerritory(gameState.territory, this.turn);
-    }, 200);
+			this.parseCheckmater(gameState.checkmater.toString(), this.turn)
+		}, 200);
   }
 
   parseUSI(usi: string) {
@@ -374,6 +381,33 @@ export class BoardComponent implements OnInit {
       this.territory.push(tmp_row);
     }
   }
+
+	parseCheckmater(checkmater: string, turn: number){
+		//console.log("State.checkmater="+checkmater);
+		this.checkmater = [];
+		if(turn == 1) checkmater = checkmater.split('').reverse().join('');
+		let rows: string[] = checkmater.split('/');
+		for(let i = 0; i < 9; ++i) {
+			let tmpRow = [];
+			for(let j = 0; j < 9; ++j){
+				switch (rows[i][j]){
+					case 'T':
+						tmpRow.push('checkmating');
+						break;					
+					case 'F':
+						tmpRow.push(this.territory[i][j]);
+						break;
+				}
+			}
+			//console.log("tmpRow="+tmpRow);
+			this.checkmater.push(tmpRow);
+		}
+		//console.log("checkmater="+this.checkmater);
+		
+		//what did i just see
+			this.territory = this.checkmater;
+		//
+	}
 
   parseFinish(isFinish: boolean, winner: number, round: number) {
     if (isFinish && winner) {
