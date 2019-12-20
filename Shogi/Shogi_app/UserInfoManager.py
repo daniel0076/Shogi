@@ -75,7 +75,6 @@ class UserInfoManager:
         else:
             UserSettings.objects.filter(userId = user_id).update(settings = json.dumps(data))
 
-
     def get_settings(self, user_id):
         return self.load_settings(user_id)
 
