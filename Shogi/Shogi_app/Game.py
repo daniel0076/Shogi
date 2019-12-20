@@ -68,8 +68,6 @@ class Game:
         else:
             self.winner = 0
         #self.winner = 2 - data
-        self.send_game_status()
-        self.exit()
 
     def exit(self):
         if not self.is_finish:
