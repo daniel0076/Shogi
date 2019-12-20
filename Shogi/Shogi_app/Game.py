@@ -147,10 +147,12 @@ class Game:
         if (self.user1_id == self.user2_id):
             data['content']['turn']        = self.round % 2
             self.user1_ws.send(json.dumps(data))
+            return data
         else:
             self.user1_ws.send(json.dumps(data))
             data['content']['turn']   = 1
             self.user2_ws.send(json.dumps(data))
+            return data
         #print(self.board)
 
     def send_records(self):
