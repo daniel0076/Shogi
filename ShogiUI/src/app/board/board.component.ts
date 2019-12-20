@@ -3,10 +3,11 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Piece } from '../shared/piece/piece.interface';
 import { GameState, GameStateModel } from '../game/store/game.state';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
 import { PieceState } from './board.interface';
+import { Router } from "@angular/router"
 
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
@@ -19,6 +20,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 export class BoardComponent implements OnInit {
   @Input() gameType: string;
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
+  private gameStateSubscription: Subscription = null;
   private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
@@ -27,25 +29,30 @@ export class BoardComponent implements OnInit {
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
 	private validCell: string[][] = [];	
-  private promoteResponse: boolean = false;
 	private ori_territory: string = "";
+
+  constructor(
+    private boardService: BoardService,
+    private modalService: NzModalService,
+    private message: NzMessageService,
+    private router: Router
+  ) { }
+
+  ngOnInit() {
+    if(!this.gameStateSubscription){
+      console.log("Subscribe");
+      this.gameStateSubscription = this.gameState$.subscribe(this.gameStateObserver);
+    }
+  }
+  ngOnDestroy() {
+    this.gameStateSubscription.unsubscribe();
+  }
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
-
-
-  constructor(
-    private boardService: BoardService,
-    private modalService: NzModalService,
-    private message: NzMessageService,
-  ) { }
-
-  ngOnInit() {
-    this.gameState$.subscribe(this.gameStateObserver);
-  }
 
   cellClicked(rowIndex: number, colIndex: number) {
 	
@@ -235,8 +242,6 @@ export class BoardComponent implements OnInit {
     console.log(gameState);
     if (gameState.turn != undefined && this.turn === undefined) {
       this.showModal('棋局開始', '');
-    } else if (gameState.turn != this.turn) {
-      this.showModal('玩家交換', '起手無回');
     }
 
     setTimeout(() => {
@@ -245,11 +250,12 @@ export class BoardComponent implements OnInit {
       } else {
         this.turn = gameState.turn;
       }
+      this.parseFinish(gameState.isFinish, gameState.winner, gameState.round);
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
 			this.ori_territory = gameState.territory;
       this.parseTerritory(gameState.territory, this.turn);
-    }, 1000);
+    }, 200);
   }
 
   parseUSI(usi: string) {
@@ -340,6 +346,24 @@ export class BoardComponent implements OnInit {
     }
   }
 
+  parseFinish(isFinish: boolean, winner: number, round: number){
+    if(isFinish){
+      if(this.gameType === "online"){
+        if(winner == this.turn){
+          this.winnerModal();
+        } else {
+          this.loserModal();
+        }
+      } else {
+        if(round % 2 === this.turn){
+          this.winnerModal();
+        } else {
+          this.loserModal();
+        }
+      }
+    }
+  }
+
   usi_encode(rowIndex: number, colIndex: number, turn: number): string {
     let reversed = turn ? true : false;
     let usi_position: string = "";
@@ -410,6 +434,32 @@ export class BoardComponent implements OnInit {
     });
 
     setTimeout(() => modal.destroy(), 1000);
+  }
+
+  winnerModal() {
+    let modal = this.modalService.success({
+      nzTitle: '棋局結束',
+      nzContent: '恭喜你贏了!',
+      nzOnOk: () => {
+          modal.destroy();
+          setTimeout(()=>{
+            this.router.navigate(['/select']);
+          }, 100);
+      }
+    });
+  }
+
+  loserModal() {
+    let modal = this.modalService.success({
+      nzTitle: '棋局結束',
+      nzContent: '敗北QQ',
+      nzOnOk: () => {
+          modal.destroy();
+          setTimeout(()=>{
+            this.router.navigate(['/select']);
+          }, 100);
+      }
+    });
   }
 
 }
