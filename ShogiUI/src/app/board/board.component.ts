@@ -53,6 +53,7 @@ export class BoardComponent implements OnInit {
     }
   }
   ngOnDestroy() {
+
     this.gameStateSubscription.unsubscribe();
     this.settingStateSubscription.unsubscribe();
   }
@@ -376,7 +377,7 @@ export class BoardComponent implements OnInit {
   }
 
   parseFinish(isFinish: boolean, winner: number, round: number) {
-    if (isFinish && winner) {
+    if (isFinish && winner != undefined) {
       if (this.gameType === "online") {
         if (winner == this.turn) {
           this.winnerModal();
@@ -459,7 +460,7 @@ export class BoardComponent implements OnInit {
     let modal = this.modalService.confirm({
       nzTitle: '是否確認結束？',
       nzOnOk: () => {
-        this.gameStateSubscription.unsubscribe();
+        this.gameService.resetGame();
         modal.destroy();
         setTimeout(() => {
           this.router.navigate(['/select']);
@@ -487,7 +488,6 @@ export class BoardComponent implements OnInit {
       nzContent: '恭喜你贏了!',
       nzOnOk: () => {
         modal.destroy();
-        this.gameService.exit();
         setTimeout(() => {
           this.router.navigate(['/select']);
         }, 100);
