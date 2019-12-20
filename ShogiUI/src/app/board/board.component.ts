@@ -19,9 +19,9 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
   styleUrls: ['./board.component.less']
 })
 export class BoardComponent implements OnInit {
-  @Input() gameType: string;
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
   private gameStateSubscription: Subscription = null;
+  private gameType: string = null;
   private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
@@ -242,10 +242,10 @@ export class BoardComponent implements OnInit {
 
   parseGameState(gameState: GameStateModel) {
     console.log(gameState);
+    this.gameType = gameState.gameType;
     if (gameState.turn != undefined && this.turn === undefined) {
       this.showModal('棋局開始', '');
     }
-
     setTimeout(() => {
       if (this.gameType === 'single') {
         this.turn = 0;

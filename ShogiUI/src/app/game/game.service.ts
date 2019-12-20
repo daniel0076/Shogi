@@ -44,6 +44,7 @@ export class GameService {
       }
     });
     this.store.dispatch(event);
+    console.log("next", event);
   }
 
   exit() {
