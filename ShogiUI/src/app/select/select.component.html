@@ -17,6 +17,7 @@
         <button nz-button nzType="primary" (click)="startHistoryGame()">History Game</button>
       </div>
     </div>
+    <app-setting></app-setting>
     <nz-modal [(nzVisible)]="recVisible" nzTitle="Record" (nzOnCancel)="handleCancel()">
       <ul class="records">
         <li *ngFor="let record of records" (click)="onSelectRecord(record)">
