@@ -245,9 +245,11 @@ export class BoardComponent implements OnInit {
       } else {
         this.turn = gameState.turn;
       }
-      this.validMove = gameState.validMove;
-      this.parseUSI(gameState.usi);
+      
+			this.validMove = gameState.validMove;
 			this.ori_territory = gameState.territory;
+      
+			this.parseUSI(gameState.usi);
       this.parseTerritory(gameState.territory, this.turn);
     }, 1000);
   }
