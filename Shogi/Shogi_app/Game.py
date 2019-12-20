@@ -115,9 +115,6 @@ class Game:
         if data['type'] == 'surrender':
             self.surrender(data['content'])
 
-        if data['type'] == 'exit':
-            self.exit()
-        
         if data['type'] == 'setRecord':
             self.setRecord(data['content'])
 
@@ -126,9 +123,10 @@ class Game:
 
         if data['type'] == 'exit':
             self.is_finish = True
-            self.exit()
         else:
             self.send_game_status()
+            if self.is_finish == True:
+                self.exit()
 
     def send_game_status(self):
         data = {}

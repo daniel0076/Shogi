@@ -25,7 +25,6 @@ send('{ "type": "move", "content":{"type":"move", "content":"6c6d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"6g6f"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5c5d"}}')
 send('{ "type": "move", "content":{"type":"move", "content":"5g5f"}}')
-send('{ "type": "move", "content":{"type":"back"}}')
 send('{ "type": "move", "content":{"type":"exit"}}')
 
 ws.close()
