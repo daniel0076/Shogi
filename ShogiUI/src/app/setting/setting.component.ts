@@ -33,14 +33,6 @@ export class SettingComponent implements OnInit {
     }
 
     
-    init_setting(){
-        this.settingService.get_setting();
-        if(this.user_setting.show_terr){
-           this.show_territory = "On";
-        }else{
-           this.show_territory = "Off";
-        }
-    }
 
     SubmitSetting(){
         this.settingService.update_setting(this.user_setting);
@@ -60,6 +52,11 @@ export class SettingComponent implements OnInit {
             console.log(settingResponse);
             if(settingResponse.show_terr != null){
                 this.user_setting.show_terr = settingResponse.show_terr;
+                if(this.user_setting.show_terr){
+                   this.show_territory = "On";
+                }else{
+                   this.show_territory = "Off";
+                }
                 console.log(settingResponse);
             }
         },
