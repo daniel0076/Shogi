@@ -3,23 +3,23 @@ import { produce, Draft } from 'immer';
 import { Game } from './game.actions';
 
 export interface GameStateModel {
-    usi: string;
-    checkmater: [];
-    isCheckmate: boolean;
-    isFinish: boolean;
-    round: number;
-    turn: number;
-    territory: string;
-    winner: any;
-    validMove: object;
-    gameType: string;
+  usi: string;
+  checkmater: [];
+  isCheckmate: boolean;
+  isFinish: boolean;
+  round: number;
+  turn: number;
+  territory: string;
+  winner: any;
+  validMove: object;
+  gameType: string;
 }
 
 @State<GameStateModel>({
   name: 'game'
 })
 
-export class GameState{
+export class GameState {
   constructor() { }
 
   @Selector()
@@ -28,7 +28,7 @@ export class GameState{
   }
 
   @Selector()
-  static getUSI(state: GameStateModel): string{
+  static getUSI(state: GameStateModel): string {
     return state.usi;
   }
 
@@ -44,7 +44,8 @@ export class GameState{
   @Action(Game.ResetGame)
   resetGame(ctx: StateContext<GameStateModel>, action: Game.ResetGame) {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
-      state.usi = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
+      state.usi = "";
+      state.gameType = undefined;
     }));
   }
 

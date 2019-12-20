@@ -23,8 +23,8 @@ export class GameService {
         content: userId
       }
     });
-    console.log("surrender", event);
     this.store.dispatch(event);
+    this.resetGame();
   }
 
   prevMove() {
@@ -77,7 +77,10 @@ export class GameService {
       }
     );
     this.store.dispatch(event);
+  }
 
+  resetGame(){
+    this.store.dispatch(new Game.ResetGame());
   }
 
 }
