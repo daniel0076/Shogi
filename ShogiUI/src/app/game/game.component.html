@@ -10,8 +10,8 @@
                 <button nz-button nzType="primary" (click)="surrender()">投降</button>
             </ng-container>
             <ng-container *ngIf="gameType == 'history'">
-                <button nz-button nzType="primary">上一步</button>
-                <button nz-button nzType="primary">下一步</button>
+                <button nz-button nzType="primary" (click)="prevMove">上一步</button>
+                <button nz-button nzType="primary" (click)="nextMove">下一步</button>
             </ng-container>
         </div>
 

@@ -113,10 +113,10 @@ export class SelectComponent implements OnInit {
 
 
   navigateGame(gameType: string){
-    this.message.create('success', '二秒後遊戲開始');
+    this.message.create('success', '準備進行遊戲');
     setTimeout(() =>{
         this.router.navigate(['/game', {gameType: gameType}]);
-    }, 2000);
+    }, 1000);
   }
 
   onSelectRecord(record: any): void{
