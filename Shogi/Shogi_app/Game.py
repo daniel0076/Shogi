@@ -123,6 +123,7 @@ class Game:
 
         if data['type'] == 'exit':
             self.is_finish = True
+            self.exit()
         else:
             self.send_game_status()
             if self.is_finish == True:
