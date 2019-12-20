@@ -1,7 +1,7 @@
 export interface LoginResponse {
     content: {
         status: boolean;
-        user_id: number;
+        userId: number;
     }
 }
 

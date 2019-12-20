@@ -14,6 +14,15 @@ class GameHistory(models.Model):
     def __unicode__(self):
         return self.id
 
+class GamePuzzle(models.Model):
+    init_usi    = models.CharField(max_length = 200)
+    puzzle_name = models.CharField(max_length = 200)
+
+    objects = UserManager()
+
+    def __unicode__(self):
+        return self.id
+
 class UserAccount(models.Model):
     username = models.CharField(max_length = 20)
     password = models.CharField(max_length = 20)

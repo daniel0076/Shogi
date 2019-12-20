@@ -1,0 +1,37 @@
+<nz-layout>
+  <nz-header></nz-header>
+  <nz-content>
+
+    <div class="game-options">
+      <h1> Select Game </h1>
+      <div class="option-button-div">
+        <button nz-button nzType="primary" (click)="startSingleGame()">Single Device Game</button>
+      </div>
+      <div class="option-button-div">
+        <button nz-button nzType="primary" (click)="startOnlineGame()">Online Game</button>
+      </div>
+      <div class="option-button-div">
+        <button nz-button nzType="primary" (click)="Puzzle">Puzzle Game</button>
+      </div>
+      <div class="option-button-div">
+        <button nz-button nzType="primary" (click)="startHistoryGame()">History Game</button>
+      </div>
+    </div>
+    <nz-modal [(nzVisible)]="recVisible" nzTitle="Record" (nzOnCancel)="handleCancel()">
+      <ul class="records">
+        <li *ngFor="let record of records" (click)="onSelectRecord(record)">
+          <span class="badge">{{record.gameId}}</span>Date:{{record.date}}
+        </li>
+      </ul>
+    </nz-modal>
+
+    <nz-modal [(nzVisible)]="puzVisible" nzTitle="Puzzles" (nzOnCancel)="handleCancel()">
+      <ul class="puzzles">
+        <li *ngFor="let puzzle of puzzles" (click)="onSelectPuzzle(puzzle)">
+          <span class="badge">{{record.gameId}}</span>{{record.puzzleName}}
+        </li>
+      </ul>
+    </nz-modal>
+
+  </nz-content>
+</nz-layout>

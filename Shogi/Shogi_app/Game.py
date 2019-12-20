@@ -5,6 +5,7 @@ import Shogi_app.ShogiBoard as ShogiBoard
 from Shogi_app.UserInfoManager import UserInfoManagerSingleton
 
 from Shogi_app.models import GameHistory
+from Shogi_app.models import GamePuzzle
 from django.db.models import Q
 from django.core import serializers
 
@@ -25,6 +26,7 @@ class Game:
         self.start_time_str= time.strftime("%Y-%m-%d %H:%M", time.localtime()), 
         self.start_time_str= self.start_time_str[0]
         self.start_time    = time.time()
+        self.need_save     = True
 
     def __str__(self):
         return 'user_id({0}, {1})'.format(self.user1_id, self.user2_id)
@@ -35,6 +37,11 @@ class Game:
         self.history_board.append(self.board.output_usi())
         self.history_move.append(data)
         self.check_finish()
+
+    def check_finish(self):
+        # Check game finish and winner
+        self.is_finish = self.board.is_win
+        self.winner = self.board.winner
 
     def prev(self):
         if (len(self.history_board) < 2):
@@ -60,18 +67,20 @@ class Game:
         self.exit()
 
     def exit(self):
-        # tell the user info manager to update
-
-        time_diff = time.time() - self.start_time
-        record = GameHistory(date     = self.start_time_str, 
-                             duration = ('%d:%d' % (time_diff / 3600, (time_diff % 3600) / 60)), 
-                             user1_id = self.user1_id, 
-                             user2_id = self.user2_id, 
-                             init_usi = self.history_board[0], 
-                             moves = json.dumps(self.history_move))
-        record.save()
+        if not self.is_finish:
+            return
+        if self.need_save:
+            time_diff = time.time() - self.start_time
+            record = GameHistory(date     = self.start_time_str, 
+                                 duration = ('%d:%d' % (time_diff / 3600, (time_diff % 3600) / 60)), 
+                                 user1_id = self.user1_id, 
+                                 user2_id = self.user2_id, 
+                                 init_usi = self.history_board[0], 
+                                 moves = json.dumps(self.history_move))
+            record.save()
         UserInfoManagerSingleton.update_ingame(self.user1_id, False)
         UserInfoManagerSingleton.update_ingame(self.user2_id, False)
+
 
     def setRecord(self, data):
         r = GameHistory.objects.filter(id = data).values()[0]
@@ -83,31 +92,41 @@ class Game:
         self.history_move  = []
         self.record_move   = json.loads(r['moves'])
 
+    def setPuzzle(self, data):
+        r = GamePuzzle.objects.filter(id = data).values()[0]
+        self.board = ShogiBoard.Board(r['init_usi'])
+        self.round = 0
+        self.is_finish = False
+        self.winner    = 0
+
     def update(self, data):
         if data['type'] == 'move':
             self.move(data['content'])
-            self.send_game_status()
 
         if data['type'] == 'prev':
             self.prev()
-            self.send_game_status()
 
         if data['type'] == 'next':
             self.next()
-            self.send_game_status()
 
         if data['type'] == 'surrender':
             self.surrender(data['content'])
-            self.send_game_status()
 
-        # only in single game
         if data['type'] == 'exit':
             self.exit()
-            self.send_game_status()
         
         if data['type'] == 'setRecord':
             self.setRecord(data['content'])
-            self.send_game_status()
+
+        if data['type'] == 'setPuzzle':
+            self.setPuzzle(data['content'])
+
+        if data['type'] == 'exit':
+            self.is_finish = True
+
+        self.send_game_status()
+        self.exit()
+        
 
     def send_game_status(self):
         data = {}
@@ -139,14 +158,17 @@ class Game:
         data['content'] = [{"game_id": x['pk'], "date": x['fields']['date'], "duration": x['fields']['duration']} for x in json.loads(serializers.serialize('json', r))]
         self.user1_ws.send(json.dumps(data))
 
-    def check_finish(self):
-        # Check game finish and winner
-        self.is_finish = self.board.is_win
-        self.winner = self.board.winner
+    def send_puzzle(self):
+        data = {}
+        data['type'] = "[Game] Select Puzzle"
+        r = GamePuzzle.objects.all()
+        data['content'] = [{"game_id": x['pk'], "puzzleName": x['fields']['puzzle_name']} for x in json.loads(serializers.serialize('json', r))]
+        self.user1_ws.send(json.dumps(data))
 
 class Single(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
+        self.need_save = True
         self.send_game_status()
     
     def update(self, data):
@@ -156,6 +178,7 @@ class Single(Game):
 class Online(Game):
     def __init__(self, user1_id, user2_id, user1_ws, user2_ws):
         super().__init__(user1_id, user2_id, user1_ws, user2_ws)
+        self.need_save = True
         self.send_game_status()
 
     def update(self, data):
@@ -165,8 +188,19 @@ class Online(Game):
 class Record(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
+        self.need_save = False
         self.send_records()
 
     def update(self, data):
         if data['type'] == 'prev' or data['type'] == 'next' or data['type'] == 'exit' or data['type'] == 'setRecord': 
+            super().update(data)
+
+class Puzzle(Game):
+    def __init__(self, user_id, user_ws):
+        super().__init__(user_id, user_id, user_ws, -1)
+        self.need_save = False
+        self.send_puzzle()
+
+    def update(self, data):
+        if data['type'] == 'prev' or data['type'] == 'move' or data['type'] == 'exit' or data['type'] == 'setPuzzle': 
             super().update(data)

@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { GameComponent } from './game/game.component';
 import { AuthComponent } from './core/auth/auth.component';
 import { WelcomeComponent } from './welcome/welcome.component';
+import { SelectComponent } from './select/select.component';
 
 const routes: Routes = [
   {
@@ -12,6 +13,10 @@ const routes: Routes = [
   {
     path: 'game',
     component: GameComponent
+  },
+  {
+    path: 'select',
+    component: SelectComponent 
   },
   {
     path: '',

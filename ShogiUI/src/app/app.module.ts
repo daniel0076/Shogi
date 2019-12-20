@@ -19,7 +19,8 @@ import en from '@angular/common/locales/en';
 import { CoreModule } from './core/core.module';
 import { SharedModule } from './shared/shared.module';
 import { GameComponent } from './game/game.component';
-
+import { SelectComponent } from './select/select.component';
+import { SelectState } from './select/store/select.state';
 import { GameState } from './game/store/game.state';
 import { AuthState } from './core/auth/store/auth.state';
 
@@ -30,7 +31,8 @@ registerLocaleData(en);
     AppComponent,
     BoardComponent,
     WelcomeComponent,
-    GameComponent
+    GameComponent,
+    SelectComponent
   ],
   imports: [
     CoreModule,
@@ -39,7 +41,8 @@ registerLocaleData(en);
 		AppRoutingModule,
     NgxsModule.forRoot([
       GameState,
-      AuthState
+      AuthState,
+      SelectState
     ]),
     NgxsWebsocketPluginModule.forRoot({
       url: 'ws://127.0.0.1:8000/ws/'

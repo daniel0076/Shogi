@@ -13,22 +13,6 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 @Component({
   selector: 'app-board',
 
-//
-	animations: [
-		trigger('select', [
-			state('unselected', style({
-				opacity: 0.3
-	  	})),
-			state('selected', style({
-				opacity: 1
-			})),
-			transition('unselected => selected, selected => unselected', [
-			animate('0.5s')
-			]),
-		]),
-	],	
-//
-
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less']
 })
@@ -42,13 +26,16 @@ export class BoardComponent implements OnInit {
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
-	private validCell: string[][] = [];
+	private validCell: string[][] = [];	
+  private promoteResponse: boolean = false;
+	private ori_territory: string = "";
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
+
 
   constructor(
     private boardService: BoardService,
@@ -62,15 +49,52 @@ export class BoardComponent implements OnInit {
 
   cellClicked(rowIndex: number, colIndex: number) {
 	
+		let original_territory: string[][] = this.territory;
+
     // check valid move
 
     if (!this.pieceState.selected) {  // select source
       let pieceUSI = this.usi_encode(rowIndex, colIndex, this.turn);  // piece position in USI
 
       if (!this.validMove[pieceUSI]) {  // can't move this piece
-        this.message.create('error', '那不是你的棋!');
+        this.message.create('error', '你不能動這顆棋!');
         return;
       }
+			
+
+			this.validCell = [];
+			for(let i = 0; i < 9; ++i){
+				let tmp_row = [];
+				for(let j = 0; j < 9; ++j){
+					tmp_row.push('N');
+				}
+				this.validCell.push(tmp_row);
+			}		
+
+			let x: string = "";
+			let valid_pos: number[] = [];
+			for (x of this.validMove[pieceUSI]){
+				//console.log(x);
+				valid_pos = this.usi_decode(x, this.turn);
+
+				this.validCell[valid_pos[0]][valid_pos[1]] = 'V';
+
+		//		console.log(valid_pos[0]);
+			//	console.log(valid_pos[1]);
+				
+				//console.log(this.validCell);
+			}
+
+			for(let i = 0; i < 9; ++i){
+				for(let j = 0; j < 9; ++j){
+					if(this.validCell[i][j] == 'V'){
+						this.territory[i][j] = 'valid';
+					}
+				}
+			}
+			//console.log(this.territory);
+
+	
 
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
@@ -85,11 +109,14 @@ export class BoardComponent implements OnInit {
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
         this.selectPiece(rowIndex, colIndex, false);
+				//this.territory = original_territory;
+				this.parseTerritory(this.ori_territory, this.turn);
         return
       }
       // check valid move
       let found: boolean = false;
-      for (let validPos of this.validMove[sourceUSI]) {
+      let validPos: string = "";
+      for (validPos of this.validMove[sourceUSI]) {
         if (validPos.includes(destinationUSI)) {
           found = true;
           break;
@@ -99,23 +126,49 @@ export class BoardComponent implements OnInit {
         this.message.create('error', '無法走到那');
         return;
       }
-
+      
       let usi_move = sourceUSI + destinationUSI;
-      // send
-      this.boardService.movePiece(usi_move);
+
+      // check promotion
+      if (validPos.includes('+')) {  // can promote
+        let timer: any = undefined;
+
+        const modal = this.modalService.confirm({
+          nzTitle: "昇變",
+          nzContent: "是否要昇變?",
+          //nzOnOk: () => {this.promoteResponse = true},
+          nzOnOk: () => {
+            usi_move += "+";
+            this.boardService.movePiece(usi_move);
+            clearTimeout(timer);
+            modal.destroy()
+          },
+          nzOnCancel: () => {
+            this.boardService.movePiece(usi_move);
+            clearTimeout(timer);
+            modal.destroy()
+          }
+        });
+
+        timer = setTimeout(() => {
+          // no promote on default timeout
+          this.boardService.movePiece(usi_move);
+          modal.destroy()
+        }, 100000);
+      }
+      else if (validPos.includes('*')) {  // must promote
+        usi_move += "+";
+        this.boardService.movePiece(usi_move);
+      } else {
+        this.boardService.movePiece(usi_move);
+      }
+
       //reset state
       this.pieceState.selected = false;
       this.pieceState.usi_position = "";
     }
   }
 
-	highlightCell(event){
-		console.log(event);
-		if(this.pieceState.selected)
-			event.toElement.style.backgroundColor = "#FF0000";
-		else
-			event.toElement.style.backgroundColor = "#000000";
-	}
 
   handPieceClicked(piece: Piece) {
     // check valid move
@@ -159,7 +212,8 @@ export class BoardComponent implements OnInit {
       }
       this.validMove = gameState.validMove;
       this.parseUSI(gameState.usi);
-      this.parseTerritory(gameState.territory);
+			this.ori_territory = gameState.territory;
+      this.parseTerritory(gameState.territory, this.turn);
     }, 1000);
   }
 
@@ -196,19 +250,40 @@ export class BoardComponent implements OnInit {
       return;
     }
 
-    for (let token of usi) {
-      let piece: Piece = new Piece(token);
-      if (piece.symbol === piece.symbol.toLowerCase()) {
-        this.secondPlayerHandPieces.push(piece);
-      } else if (piece.symbol === piece.symbol.toUpperCase()) {
-        this.firstPlayerHandPieces.push(piece);
+    let i = 0;
+    let token: string = "";
+    while (i < usi.length) {
+      token = usi[i];
+      if (!isNaN(Number(token))) { // isdigit
+        let count: number = Number(token);
+        i++;
+        token = usi[i];
+        if (token === token.toLowerCase()) {
+          for (let i = 0; i < count; i++) {
+            this.secondPlayerHandPieces.push(new Piece(token));
+          }
+        } else if (token === token.toUpperCase()) {
+          for (let i = 0; i < count; i++) {
+            this.firstPlayerHandPieces.push(new Piece(token));
+          }
+        }
+
+      } else if (isNaN(Number(token))) {
+        if (token === token.toLowerCase()) {
+          this.secondPlayerHandPieces.push(new Piece(token));
+        } else if (token === token.toUpperCase()) {
+          this.firstPlayerHandPieces.push(new Piece(token));
+        }
       }
+
+      i++;
     }
   }
-  parseTerritory(territory: string) {
+  parseTerritory(territory: string, turn: number) {
     this.territory = [];
+	  if(turn == 1) territory = territory.split('').reverse().join('');
     let rows: string[] = territory.split('/');
-    for (let row of rows) {
+		for (let row of rows) {
       let tmp_row = [];
       for (let token of row) {
         switch (token) {
@@ -243,6 +318,28 @@ export class BoardComponent implements OnInit {
     return usi_position;
   }
 
+	usi_decode(usi_pos: string, turn: number): number[]{
+		let reversed = turn ? true : false;
+		//console.log("turn: " + turn);
+		//console.log("reversed: " + reversed);
+		let row: number = 0;
+		let col: number = 0;
+		let ref: string = "a";
+		//console.log(usi_pos[0]);
+		//console.log(usi_pos[1]);
+		if(!reversed){	// first hand
+			col = 9 - Number(usi_pos[0]);
+			row = usi_pos.charCodeAt(1) - ref.charCodeAt(0);
+		} else if(reversed){
+			col = Number(usi_pos[0]) - 1;
+			row = 8 - ( usi_pos.charCodeAt(1) - ref.charCodeAt(0) );
+		}
+
+		let ret: number[] = [];
+		ret.push(row);
+		ret.push(col);
+		return ret;
+	}
 
   parsePieces(row: string): Piece[] {
     let pieces: Piece[] = [];

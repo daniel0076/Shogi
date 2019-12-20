@@ -15,7 +15,6 @@ class Piece():
             return -1
         return 1 
 
-
     def is_promote(self):
         return self.symbol >= PRO_P  
 

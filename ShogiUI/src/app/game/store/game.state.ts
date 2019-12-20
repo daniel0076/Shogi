@@ -1,7 +1,6 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { produce, Draft } from 'immer';
 import { Game } from './game.actions';
-import { GameControl } from '../game.interface';
 
 export interface GameStateModel {
     usi: string;

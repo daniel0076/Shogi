@@ -27,6 +27,11 @@ class GameManager:
             game_obj = Game.Record(user_id, ws)
             return game_obj
 
+        if data['type'] == 'puzzle':
+            UserInfoManagerSingleton.update_ingame(user_id, True)
+            game_obj = Game.Puzzle(user_id, ws)
+            return game_obj
+
         if data['type'] == 'online':
             self.online_lock.acquire()
             UserInfoManagerSingleton.update_ingame(user_id, True)
