@@ -63,7 +63,11 @@ class Game:
 
     def surrender(self, data):
         self.is_finish = True
-        self.winner = 2 - data
+        if (data == self.user1_id):
+            self.winner = 1
+        else:
+            self.winner = 0
+        #self.winner = 2 - data
         self.send_game_status()
         self.exit()
 
