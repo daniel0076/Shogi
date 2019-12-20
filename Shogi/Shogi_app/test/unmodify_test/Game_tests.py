@@ -10,6 +10,8 @@ def send(text):
     print("=> '%s'" % result)
 
 send('{"type": "login", "content":{"username":"test", "password":"password"}}')
+result =  ws.recv()
+print("=> '%s'" % result)
 
 ws.send('{"type": "game", "content":{"type": "single"}}')
 
