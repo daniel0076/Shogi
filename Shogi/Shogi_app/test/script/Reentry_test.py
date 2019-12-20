@@ -10,13 +10,11 @@ def send(text):
     print("=> '%s'" % result)
 
 send('{"type": "login", "content":{"username":"test", "password":"password"}}')
+result =  ws.recv()
+print("=> '%s'" % result)
 
-send('{"type": "game", "content":{"type": "record"}}')
-
-send('{ "type": "move", "content":{"type":"setRecord", "content":1}}')
+send('{"type": "game", "content":{"type": "single"}}')
 send('{ "type": "move", "content":{"type":"exit"}}')
 
-send('{"type": "game", "content":{"type": "record"}}')
-
-send('{ "type": "move", "content":{"type":"setRecord", "content":1}}')
+send('{"type": "game", "content":{"type": "single"}}')
 send('{ "type": "move", "content":{"type":"exit"}}')
