@@ -15,6 +15,7 @@ class Game:
         self.user2_id = user2_id
         self.user1_ws = user1_ws
         self.user2_ws = user2_ws
+        self.type     = 'proto'
 
         self.board = ShogiBoard.Board()
         self.round = 0
@@ -141,6 +142,7 @@ class Game:
         data['content']['isCheckmate'] = self.board.is_checkmate
         data['content']['checkmater']  = self.board.checkmater
         data['content']['territory']   = self.board.output_territory()
+        data['content']['gameType']    = self.type
 
         if (self.user1_id == self.user2_id):
             data['content']['turn']        = self.round % 2
@@ -169,6 +171,7 @@ class Single(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
         self.need_save = True
+        self.type      = 'single'
         self.send_game_status()
     
     def update(self, data):
@@ -179,6 +182,7 @@ class Online(Game):
     def __init__(self, user1_id, user2_id, user1_ws, user2_ws):
         super().__init__(user1_id, user2_id, user1_ws, user2_ws)
         self.need_save = True
+        self.type      = 'online'
         self.send_game_status()
 
     def update(self, data):
@@ -189,6 +193,7 @@ class Record(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
         self.need_save = False
+        self.type      = 'record'
         self.send_records()
 
     def update(self, data):
@@ -199,6 +204,7 @@ class Puzzle(Game):
     def __init__(self, user_id, user_ws):
         super().__init__(user_id, user_id, user_ws, -1)
         self.need_save = False
+        self.type      = 'puzzle'
         self.send_puzzle()
 
     def update(self, data):

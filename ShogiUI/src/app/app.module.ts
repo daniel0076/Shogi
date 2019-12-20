@@ -23,7 +23,8 @@ import { SelectComponent } from './select/select.component';
 import { SelectState } from './select/store/select.state';
 import { GameState } from './game/store/game.state';
 import { AuthState } from './core/auth/store/auth.state';
-
+import { SettingState } from './setting/store/setting.state';
+import { SettingComponent } from './setting/setting.component';
 registerLocaleData(en);
 
 @NgModule({
@@ -32,7 +33,8 @@ registerLocaleData(en);
     BoardComponent,
     WelcomeComponent,
     GameComponent,
-    SelectComponent
+    SelectComponent,
+    SettingComponent
   ],
   imports: [
     CoreModule,
@@ -42,7 +44,8 @@ registerLocaleData(en);
     NgxsModule.forRoot([
       GameState,
       AuthState,
-      SelectState
+      SelectState,
+      SettingState
     ]),
     NgxsWebsocketPluginModule.forRoot({
       url: 'ws://127.0.0.1:8000/ws/'
