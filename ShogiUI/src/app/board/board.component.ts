@@ -9,18 +9,20 @@ import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
 import { PieceState } from './board.interface';
 import { Router } from "@angular/router"
+import { SettingState, SettingStateModel } from '../setting/store/setting.state';
 
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-board',
-
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less']
 })
 export class BoardComponent implements OnInit {
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
+  @Select(SettingState.getSettingResponse) settingState$: Observable<SettingStateModel>;
   private gameStateSubscription: Subscription = null;
+  private settingStateSubscription: Subscription = null;
   private gameType: string = null;
   private turn: number
   private board: Piece[][] = [];
@@ -31,13 +33,13 @@ export class BoardComponent implements OnInit {
   private territory: string[][] = [];
   private validCell: string[][] = [];
   private ori_territory: string = "";
-
+  terrVisible = true;
   constructor(
     private boardService: BoardService,
     private modalService: NzModalService,
     private message: NzMessageService,
     private router: Router,
-    private gameService: GameService
+    private gameService: GameService,
   ) { }
 
   ngOnInit() {
@@ -45,9 +47,14 @@ export class BoardComponent implements OnInit {
       console.log("Subscribe");
       this.gameStateSubscription = this.gameState$.subscribe(this.gameStateObserver);
     }
+    if (!this.settingStateSubscription) {
+      console.log("Subscribe");
+      this.settingStateSubscription = this.settingState$.subscribe(this.settingResponseObserver);
+    }
   }
   ngOnDestroy() {
     this.gameStateSubscription.unsubscribe();
+    this.settingStateSubscription.unsubscribe();
   }
 
   private gameStateObserver = {
@@ -55,6 +62,22 @@ export class BoardComponent implements OnInit {
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
+
+   private settingResponseObserver = {
+        next: settingResponse => {
+            if(!settingResponse){
+                return ;
+            }
+            console.log(settingResponse);
+            if(settingResponse.show_terr != null){
+                this.terrVisible = settingResponse.show_terr;
+            }
+        },
+        error: err => console.error('Observer got an error: ' + err),
+        complete: () => console.log('Observer got a complete notification')
+
+    };
+
 
   cellClicked(rowIndex: number, colIndex: number) {
 
@@ -329,6 +352,9 @@ export class BoardComponent implements OnInit {
     for (let row of rows) {
       let tmp_row = [];
       for (let token of row) {
+      if(!this.terrVisible){
+        token = 'Q';
+      }
         switch (token) {
           case 'W':
             tmp_row.push('white-side');
@@ -341,6 +367,7 @@ export class BoardComponent implements OnInit {
             break;
 
           default:
+            tmp_row.push('QQ');
             break;
         }
       }
