@@ -351,13 +351,13 @@ export class BoardComponent implements OnInit {
   parseFinish(isFinish: boolean, winner: number, round: number){
     if(isFinish){
       if(this.gameType === "online"){
-        if(winner == this.turn){
+        if(winner === this.turn){
           this.winnerModal();
         } else {
           this.loserModal();
         }
       } else {
-        if(round % 2 === this.turn){
+        if(winner && round % 2 === this.turn){
           this.winnerModal();
         } else {
           this.loserModal();
