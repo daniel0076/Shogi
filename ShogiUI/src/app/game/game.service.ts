@@ -27,6 +27,26 @@ export class GameService {
     this.store.dispatch(event);
   }
 
+  prevMove() {
+    const event = new SendWebSocketMessage({
+      type: 'move',
+      content: {
+        type: 'prev',
+      }
+    });
+    this.store.dispatch(event);
+  }
+  nextMove() {
+    const event = new SendWebSocketMessage({
+      type: 'move',
+      content: {
+        type: 'next',
+      }
+    });
+    this.store.dispatch(event);
+    console.log("next", event);
+  }
+
   exit() {
     const event = new SendWebSocketMessage({
       type: 'move',
@@ -37,7 +57,7 @@ export class GameService {
     this.store.dispatch(event);
   }
 
-  startHistoryGame(){
+  startHistoryGame() {
     const event = new SendWebSocketMessage({
       type: 'game',
       content: {
