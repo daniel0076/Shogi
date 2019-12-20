@@ -42,6 +42,7 @@ export class BoardComponent implements OnInit {
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
+	private validCell: string[][] = [];
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -61,14 +62,6 @@ export class BoardComponent implements OnInit {
 
   cellClicked(rowIndex: number, colIndex: number) {
 	
-		let table = <HTMLTableElement>document.getElementById('theTablee');
-		console.log(table);
-		//var theCell = <HTMLTableCellElement>table.rows[rowIndex].cells[colIndex];
-		//theCell.style.setProperty( "background-color", "#FF0000" );
-		//theCell.style.color = "#FF0000";
-		//theCell.bgColor = 'black';
-
-
     // check valid move
 
     if (!this.pieceState.selected) {  // select source
@@ -81,6 +74,7 @@ export class BoardComponent implements OnInit {
 
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
+      this.selectPiece(rowIndex, colIndex, true);
     }
     else if (this.pieceState.selected) {  // select destination
 
@@ -90,18 +84,20 @@ export class BoardComponent implements OnInit {
       if (destinationUSI == sourceUSI) { // cancel select
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
+        this.selectPiece(rowIndex, colIndex, false);
         return
       }
       // check valid move
+      let found: boolean = false;
       for (let validPos of this.validMove[sourceUSI]) {
-        let found: boolean = false;
         if (validPos.includes(destinationUSI)) {
           found = true;
           break;
         }
+      }
+      if(!found){
         this.message.create('error', '無法走到那');
         return;
-
       }
 
       let usi_move = sourceUSI + destinationUSI;
@@ -131,14 +127,20 @@ export class BoardComponent implements OnInit {
       }
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
+      piece.selected = true;
     }
     else if (this.pieceState.selected) {  // select destination
       if (pieceUSI === this.pieceState.usi_position) {  // reset
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
+        piece.selected = false;
       }
       return;
     }
+  }
+
+  selectPiece(rowIndex: number, colIndex: number, selected: boolean){
+    this.board[rowIndex][colIndex].selected = selected;
   }
 
   parseGameState(gameState: GameStateModel) {
@@ -195,7 +197,7 @@ export class BoardComponent implements OnInit {
     }
 
     for (let token of usi) {
-      let piece: Piece = { symbol: token };
+      let piece: Piece = new Piece(token);
       if (piece.symbol === piece.symbol.toLowerCase()) {
         this.secondPlayerHandPieces.push(piece);
       } else if (piece.symbol === piece.symbol.toUpperCase()) {
@@ -247,7 +249,7 @@ export class BoardComponent implements OnInit {
     let token: string;
     let i = 0;
     while (i < row.length) {
-      let piece: Piece = { 'symbol': '' };
+      let piece: Piece = new Piece()
       token = row[i];
       if (!isNaN(Number(token))) { // isdigit
         piece.symbol = "";

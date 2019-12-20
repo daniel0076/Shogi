@@ -1,13 +1,13 @@
 <div [@select]="pieceState.selected ? 'selected' : 'unselected'" class="board">
     <div nz-row>
-        <div nz-col nzSpan="9">
-            <table class="battlefield" id="theTable">
+        <div nz-col nzSpan="10">
+            <table class="battlefield">
                 <tbody>
                     <tr *ngFor="let row of board; let rowIndex = index">
                         <td *ngFor="let piece of row; let colIndex=index" 
                         [ngClass]="territory[rowIndex][colIndex]"
                         (click)="cellClicked(rowIndex, colIndex)"
-												(click)="highlightCell($event)">
+                        >
                             <ng-container *ngIf="piece.symbol">
                                 <app-piece [piece]="piece" [turn]="turn"></app-piece>
                             </ng-container>
@@ -16,7 +16,7 @@
                 </tbody>
             </table>
         </div>
-        <div nz-col nzSpan="12">
+        <div nz-col nzSpan="14">
             <div nz-row class="upper-hand-piece">
                 <table class="hand-pieces">
                     <tr *ngFor="let row of [0, 1, 2]; let rowIndex = index">
