@@ -58,7 +58,7 @@ class Game:
         if (len(self.record_move) < self.round):
             # No next move
             return False
-        self.move(self.record_move[self.round - 1])
+        self.move(self.record_move[self.round])
         return True
 
     def surrender(self, data):
