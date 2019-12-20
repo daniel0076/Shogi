@@ -18,7 +18,11 @@ def send2(text):
     print("2=> '%s'" % result)
 
 send1('{"type": "login", "content":{"username": "test", "password": "password"}}')
+result =  ws1.recv()
+print("1=> '%s'" % result)
 send2('{"type": "login", "content":{"username": "test2", "password": "password"}}')
+result =  ws2.recv()
+print("2=> '%s'" % result)
 
 ws1.send('{"type": "game", "content":{"type": "online"}}')
 ws2.send('{"type": "game", "content":{"type": "online"}}')
@@ -28,4 +32,5 @@ print("1=> '%s'" % result)
 result =  ws2.recv()
 print("2=> '%s'" % result)
 
+send1('{"type": "move", "content":{"type": "surrender", "content": 1}}')
 #time.sleep(5)

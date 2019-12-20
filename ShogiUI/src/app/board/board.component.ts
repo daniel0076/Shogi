@@ -3,22 +3,27 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Piece } from '../shared/piece/piece.interface';
 import { GameState, GameStateModel } from '../game/store/game.state';
-import { Observable } from 'rxjs';
+import { GameService } from '../game/game.service';
+import { Observable, Subscription } from 'rxjs';
 import { Select } from '@ngxs/store';
 import { BoardService } from './board.service';
 import { PieceState } from './board.interface';
+import { Router } from "@angular/router"
+import { SettingState, SettingStateModel } from '../setting/store/setting.state';
 
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-board',
-
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.less']
 })
 export class BoardComponent implements OnInit {
-  @Input() gameType: string;
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
+  @Select(SettingState.getSettingResponse) settingState$: Observable<SettingStateModel>;
+  private gameStateSubscription: Subscription = null;
+  private settingStateSubscription: Subscription = null;
+  private gameType: string = null;
   private turn: number
   private board: Piece[][] = [];
   private pieceState: PieceState = { selected: false, usi_position: "" };
@@ -26,9 +31,31 @@ export class BoardComponent implements OnInit {
   private secondPlayerHandPieces: Piece[] = [];
   private firstPlayerHandPieces: Piece[] = [];
   private territory: string[][] = [];
-	private validCell: string[][] = [];	
-  private promoteResponse: boolean = false;
-	private ori_territory: string = "";
+  private validCell: string[][] = [];
+  private ori_territory: string = "";
+  terrVisible = true;
+  constructor(
+    private boardService: BoardService,
+    private modalService: NzModalService,
+    private message: NzMessageService,
+    private router: Router,
+    private gameService: GameService,
+  ) { }
+
+  ngOnInit() {
+    if (!this.gameStateSubscription) {
+      console.log("Subscribe");
+      this.gameStateSubscription = this.gameState$.subscribe(this.gameStateObserver);
+    }
+    if (!this.settingStateSubscription) {
+      console.log("Subscribe");
+      this.settingStateSubscription = this.settingState$.subscribe(this.settingResponseObserver);
+    }
+  }
+  ngOnDestroy() {
+    this.gameStateSubscription.unsubscribe();
+    this.settingStateSubscription.unsubscribe();
+  }
 
   private gameStateObserver = {
     next: gameState => { this.parseGameState(gameState); },
@@ -36,20 +63,25 @@ export class BoardComponent implements OnInit {
     complete: () => console.log('Observer got a complete notification'),
   };
 
+   private settingResponseObserver = {
+        next: settingResponse => {
+            if(!settingResponse){
+                return ;
+            }
+            console.log(settingResponse);
+            if(settingResponse.show_terr != null){
+                this.terrVisible = settingResponse.show_terr;
+            }
+        },
+        error: err => console.error('Observer got an error: ' + err),
+        complete: () => console.log('Observer got a complete notification')
 
-  constructor(
-    private boardService: BoardService,
-    private modalService: NzModalService,
-    private message: NzMessageService,
-  ) { }
+    };
 
-  ngOnInit() {
-    this.gameState$.subscribe(this.gameStateObserver);
-  }
 
   cellClicked(rowIndex: number, colIndex: number) {
-	
-		let original_territory: string[][] = this.territory;
+
+    let original_territory: string[][] = this.territory;
 
     // check valid move
 
@@ -60,41 +92,41 @@ export class BoardComponent implements OnInit {
         this.message.create('error', '你不能動這顆棋!');
         return;
       }
-			
 
-			this.validCell = [];
-			for(let i = 0; i < 9; ++i){
-				let tmp_row = [];
-				for(let j = 0; j < 9; ++j){
-					tmp_row.push('N');
-				}
-				this.validCell.push(tmp_row);
-			}		
 
-			let x: string = "";
-			let valid_pos: number[] = [];
-			for (x of this.validMove[pieceUSI]){
-				console.log(x);
-				valid_pos = this.usi_decode(x, this.turn);
+      this.validCell = [];
+      for (let i = 0; i < 9; ++i) {
+        let tmp_row = [];
+        for (let j = 0; j < 9; ++j) {
+          tmp_row.push('N');
+        }
+        this.validCell.push(tmp_row);
+      }
 
-				this.validCell[valid_pos[0]][valid_pos[1]] = 'V';
+      let x: string = "";
+      let valid_pos: number[] = [];
+      for (x of this.validMove[pieceUSI]) {
+        console.log(x);
+        valid_pos = this.usi_decode(x, this.turn);
 
-		//		console.log(valid_pos[0]);
-			//	console.log(valid_pos[1]);
-				
-				console.log(this.validCell);
-			}
+        this.validCell[valid_pos[0]][valid_pos[1]] = 'V';
 
-			for(let i = 0; i < 9; ++i){
-				for(let j = 0; j < 9; ++j){
-					if(this.validCell[i][j] == 'V'){
-						this.territory[i][j] = 'valid';
-					}
-				}
-			}
-			//console.log(this.territory);
+        //		console.log(valid_pos[0]);
+        //	console.log(valid_pos[1]);
 
-	
+        console.log(this.validCell);
+      }
+
+      for (let i = 0; i < 9; ++i) {
+        for (let j = 0; j < 9; ++j) {
+          if (this.validCell[i][j] == 'V') {
+            this.territory[i][j] = 'valid';
+          }
+        }
+      }
+      //console.log(this.territory);
+
+
 
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
@@ -109,8 +141,8 @@ export class BoardComponent implements OnInit {
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
         this.selectPiece(rowIndex, colIndex, false);
-				//this.territory = original_territory;
-				this.parseTerritory(this.ori_territory, this.turn);
+        //this.territory = original_territory;
+        this.parseTerritory(this.ori_territory, this.turn);
         return
       }
       // check valid move
@@ -122,11 +154,11 @@ export class BoardComponent implements OnInit {
           break;
         }
       }
-      if(!found){
+      if (!found) {
         this.message.create('error', '無法走到那');
         return;
       }
-      
+
       let usi_move = sourceUSI + destinationUSI;
 
       // check promotion
@@ -171,10 +203,10 @@ export class BoardComponent implements OnInit {
 
 
   handPieceClicked(piece: Piece) {
-		
-		let original_territory: string[][] = this.territory;
-    
-		// check valid move
+
+    let original_territory: string[][] = this.territory;
+
+    // check valid move
 
     let pieceUSI = piece.symbol + "*";
     if (!this.pieceState.selected) {  // select source
@@ -183,34 +215,34 @@ export class BoardComponent implements OnInit {
         return;
       }
 
-			this.validCell = [];
-			for(let i = 0; i < 9; ++i){
-				let tmpRow = [];
-				for(let j = 0; j < 9; ++j){
-					tmpRow.push('N');
-				}
-				this.validCell.push(tmpRow);
-			}
+      this.validCell = [];
+      for (let i = 0; i < 9; ++i) {
+        let tmpRow = [];
+        for (let j = 0; j < 9; ++j) {
+          tmpRow.push('N');
+        }
+        this.validCell.push(tmpRow);
+      }
 
-			let validPosUSI: string = "";
-			let validPosNum: number[] = [];
-			for(validPosUSI of this.validMove[pieceUSI]){
-				console.log(validPosUSI);
-				validPosNum = this.usi_decode(validPosUSI, this.turn);
+      let validPosUSI: string = "";
+      let validPosNum: number[] = [];
+      for (validPosUSI of this.validMove[pieceUSI]) {
+        console.log(validPosUSI);
+        validPosNum = this.usi_decode(validPosUSI, this.turn);
 
-				this.validCell[validPosNum[0]][validPosNum[1]] = 'V';
+        this.validCell[validPosNum[0]][validPosNum[1]] = 'V';
 
-				console.log(this.validCell);
-			}
+        console.log(this.validCell);
+      }
 
-			for(let i = 0; i < 9; ++i){
-				for(let j = 0; j < 9; ++j){
-					if(this.validCell[i][j] == 'V'){
-						this.territory[i][j] = 'valid';
-					}
-				}
-			}
-	
+      for (let i = 0; i < 9; ++i) {
+        for (let j = 0; j < 9; ++j) {
+          if (this.validCell[i][j] == 'V') {
+            this.territory[i][j] = 'valid';
+          }
+        }
+      }
+
 
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
@@ -220,38 +252,35 @@ export class BoardComponent implements OnInit {
       if (pieceUSI === this.pieceState.usi_position) {  // reset
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
-				this.parseTerritory(this.ori_territory, this.turn);
+        this.parseTerritory(this.ori_territory, this.turn);
         piece.selected = false;
       }
       return;
     }
   }
 
-  selectPiece(rowIndex: number, colIndex: number, selected: boolean){
+  selectPiece(rowIndex: number, colIndex: number, selected: boolean) {
     this.board[rowIndex][colIndex].selected = selected;
   }
 
   parseGameState(gameState: GameStateModel) {
     console.log(gameState);
+    this.gameType = gameState.gameType;
     if (gameState.turn != undefined && this.turn === undefined) {
       this.showModal('棋局開始', '');
-    } else if (gameState.turn != this.turn) {
-      this.showModal('玩家交換', '起手無回');
     }
-
     setTimeout(() => {
       if (this.gameType === 'single') {
         this.turn = 0;
       } else {
         this.turn = gameState.turn;
       }
-      
-			this.validMove = gameState.validMove;
-			this.ori_territory = gameState.territory;
-      
-			this.parseUSI(gameState.usi);
+      this.parseFinish(gameState.isFinish, gameState.winner, gameState.round);
+      this.validMove = gameState.validMove;
+      this.parseUSI(gameState.usi);
+      this.ori_territory = gameState.territory;
       this.parseTerritory(gameState.territory, this.turn);
-    }, 1000);
+    }, 200);
   }
 
   parseUSI(usi: string) {
@@ -318,11 +347,14 @@ export class BoardComponent implements OnInit {
   }
   parseTerritory(territory: string, turn: number) {
     this.territory = [];
-	  if(turn == 1) territory = territory.split('').reverse().join('');
+    if (turn == 1) territory = territory.split('').reverse().join('');
     let rows: string[] = territory.split('/');
-		for (let row of rows) {
+    for (let row of rows) {
       let tmp_row = [];
       for (let token of row) {
+      if(!this.terrVisible){
+        token = 'Q';
+      }
         switch (token) {
           case 'W':
             tmp_row.push('white-side');
@@ -335,10 +367,29 @@ export class BoardComponent implements OnInit {
             break;
 
           default:
+            tmp_row.push('QQ');
             break;
         }
       }
       this.territory.push(tmp_row);
+    }
+  }
+
+  parseFinish(isFinish: boolean, winner: number, round: number) {
+    if (isFinish && winner) {
+      if (this.gameType === "online") {
+        if (winner == this.turn) {
+          this.winnerModal();
+        } else {
+          this.loserModal();
+        }
+      } else {
+        if(winner && round % 2 === this.turn){
+          this.winnerModal();
+        } else {
+          this.loserModal();
+        }
+      }
     }
   }
 
@@ -355,28 +406,28 @@ export class BoardComponent implements OnInit {
     return usi_position;
   }
 
-	usi_decode(usi_pos: string, turn: number): number[]{
-		let reversed = turn ? true : false;
-		//console.log("turn: " + turn);
-		//console.log("reversed: " + reversed);
-		let row: number = 0;
-		let col: number = 0;
-		let ref: string = "a";
-		//console.log(usi_pos[0]);
-		//console.log(usi_pos[1]);
-		if(!reversed){	// first hand
-			col = 9 - Number(usi_pos[0]);
-			row = usi_pos.charCodeAt(1) - ref.charCodeAt(0);
-		} else if(reversed){
-			col = Number(usi_pos[0]) - 1;
-			row = 8 - ( usi_pos.charCodeAt(1) - ref.charCodeAt(0) );
-		}
+  usi_decode(usi_pos: string, turn: number): number[] {
+    let reversed = turn ? true : false;
+    //console.log("turn: " + turn);
+    //console.log("reversed: " + reversed);
+    let row: number = 0;
+    let col: number = 0;
+    let ref: string = "a";
+    //console.log(usi_pos[0]);
+    //console.log(usi_pos[1]);
+    if (!reversed) {	// first hand
+      col = 9 - Number(usi_pos[0]);
+      row = usi_pos.charCodeAt(1) - ref.charCodeAt(0);
+    } else if (reversed) {
+      col = Number(usi_pos[0]) - 1;
+      row = 8 - (usi_pos.charCodeAt(1) - ref.charCodeAt(0));
+    }
 
-		let ret: number[] = [];
-		ret.push(row);
-		ret.push(col);
-		return ret;
-	}
+    let ret: number[] = [];
+    ret.push(row);
+    ret.push(col);
+    return ret;
+  }
 
   parsePieces(row: string): Piece[] {
     let pieces: Piece[] = [];
@@ -404,6 +455,22 @@ export class BoardComponent implements OnInit {
     return pieces;
   }
 
+  Exit() {
+    let modal = this.modalService.confirm({
+      nzTitle: '是否確認結束？',
+      nzOnOk: () => {
+        this.gameStateSubscription.unsubscribe();
+        modal.destroy();
+        setTimeout(() => {
+          this.router.navigate(['/select']);
+        }, 100);
+        this.gameService.exit();
+      },
+      nzOnCancel: () => {
+        modal.destroy();
+      }
+    });
+  }
   showModal(title: string, content: string): void {
     const modal = this.modalService.create({
       nzTitle: title,
@@ -413,5 +480,33 @@ export class BoardComponent implements OnInit {
 
     setTimeout(() => modal.destroy(), 1000);
   }
+
+  winnerModal() {
+    let modal = this.modalService.success({
+      nzTitle: '棋局結束',
+      nzContent: '恭喜你贏了!',
+      nzOnOk: () => {
+        modal.destroy();
+        this.gameService.exit();
+        setTimeout(() => {
+          this.router.navigate(['/select']);
+        }, 100);
+      }
+    });
+  }
+
+  loserModal() {
+    let modal = this.modalService.success({
+      nzTitle: '棋局結束',
+      nzContent: '敗北QQ',
+      nzOnOk: () => {
+        modal.destroy();
+        setTimeout(() => {
+          this.router.navigate(['/select']);
+        }, 100);
+      }
+    });
+  }
+
 
 }

@@ -24,6 +24,7 @@ class Gateway(WebsocketConsumer):
                 self.send(json.dumps(ret_msg))
                 self.is_login = ret_msg['content']['status']
                 self.user_id  = ret_msg['content']['userId']
+                self.send(json.dumps(UserInfoManagerSingleton.get_settings(self.user_id)))
             
             elif msg['type'] == "register":
                 ret_msg = UserInfoManagerSingleton.register(msg['content'])

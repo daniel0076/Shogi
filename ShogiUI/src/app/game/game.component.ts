@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameService } from './game.service';
+import { GameState, GameStateModel } from './store/game.state';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Select } from '@ngxs/store';
@@ -13,12 +14,13 @@ import { LoginResponse } from '../core/auth/auth.interface';
 })
 export class GameComponent implements OnInit {
   @Select(AuthState.getLoginResponse) loginState$: Observable<LoginResponse>;
+  @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
   constructor(private gameService: GameService, private route: ActivatedRoute) { }
   private gameType: string;
   private userId: number;
 
   private loginStateObserver = {
-    next: loginState => {this.userId = loginState.userId},
+    next: loginState => { this.userId = loginState.userId },
     error: err => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
@@ -31,12 +33,19 @@ export class GameComponent implements OnInit {
     this.loginState$.subscribe(this.loginStateObserver);
   }
 
-  surrender(){
+  surrender() {
     this.gameService.surrender(this.userId);
   }
 
-  exitSingle(){
-    this.gameService.exitSingle();
+  exit() {
+    this.gameService.exit();
+  }
+  prevMove() {
+    this.gameService.prevMove();
+  }
+
+  nextMove() {
+    this.gameService.nextMove();
   }
 
 }

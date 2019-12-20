@@ -11,6 +11,7 @@ white is on the top of the board, black is at the botton
 class Board():
     def __init__(self, usi= DEFAULT_USI):
         board, side, hand_pieces, move_count = self.parse_usi(usi)
+        self.board_s = board
         self.board = self.init_boardstate(board)
         self.hands = self.init_hand(hand_pieces)
         self.move_count = move_count
@@ -38,8 +39,12 @@ class Board():
         self.cal_checkmate()
 
     def output_territory(self):
-        territory = Territory(self.possible)
+        territory = Territory(self.possible, self.board_s)
         return territory.output_terr() 
+    
+    def print_territory(self):
+        territory = Territory(self.possible)
+        print(territory)
 
     def parse_piece(self, pieces):
         piece = []
@@ -150,7 +155,21 @@ class Board():
         for move in self.possible[1^self.side]:
             if self.possible[1^self.side][move] != None and loc in self.possible[1^self.side][move]:
                 self.is_checkmate = True
-                self.checkmater.append(self.loc2usi(move))
+                self.checkmater.append(move)
+        tmp = [[0 for i in range(9)] for j in range(9)]
+        for loc in self.checkmater:
+            tmp[loc[0]][loc[1]] = 1
+            
+        output = [''] * 9
+        for i in range(9):
+            for j in range(9):
+                if tmp[i][j] == 1:
+                    output[i] += 'T'
+                else:
+                    output[i] += 'F'
+
+        self.checkmater = '/'.join(output)
+
 
 
         
@@ -185,7 +204,7 @@ class Board():
             return -1
         line = 4 + 2 * side 
         dis = side * (lc2[0] - line)
-        if dis > 0:
+        if dis >= 0:
             if pc.get_symbol() == 'p' or pc.get_symbol() == 'l':
                 if dis > 1:
                     return 1
@@ -253,7 +272,7 @@ class Board():
                     if self.board[j][i] != None and self.board[j][i].get_symbol() == sy:  
                         flag = False 
                 if flag:
-                    for j in range(4-side*4, 4+side*2, side):
+                    for j in range(4-side*4, 4+side*3, side):
                         if self.board[j][i] == None:
                             pos.append(self.loc2usi((j, i)) + '#')
         else:
@@ -262,7 +281,7 @@ class Board():
                dis = 2  
             elif sym == 'n':
                dis = 3 
-            for i in range(4-side*4, 4+side*dis, side):
+            for i in range(4-side*4, 4+side*(dis+1), side):
                 for j in range(9):
                     if self.board[i][j] == None:
                         pos.append(self.loc2usi((i, j)) + '#')

@@ -12,6 +12,7 @@ export interface GameStateModel {
     territory: string;
     winner: any;
     validMove: object;
+    gameType: string;
 }
 
 @State<GameStateModel>({
@@ -29,11 +30,6 @@ export class GameState{
   @Selector()
   static getUSI(state: GameStateModel): string{
     return state.usi;
-  }
-
-  @Selector()
-  static getTurn(state: GameStateModel): number {
-    return state.turn;
   }
 
   @Action(Game.SelectRecord)

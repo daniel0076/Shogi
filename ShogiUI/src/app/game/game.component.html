@@ -1,20 +1,29 @@
 <nz-layout>
-    <nz-header></nz-header>
-    <nz-content class="game">
+  <nz-header></nz-header>
+  <nz-content class="game">
 
-        <div class="board">
-            <app-board [gameType]="gameType"></app-board>
-        </div>
-        <div class="control">
-            <ng-container *ngIf="gameType == 'online'">
-                <button nz-button nzType="primary" (click)="surrender()">投降</button>
-            </ng-container>
-            <ng-container *ngIf="gameType == 'history'">
-                <button nz-button nzType="primary">上一步</button>
-                <button nz-button nzType="primary">下一步</button>
-            </ng-container>
-        </div>
+    <ng-container *ngIf="(gameState$|async).round%2==0">
+        <p>持王將者可以動</p>
+    </ng-container>
+    <ng-container *ngIf="(gameState$|async).round%2==1">
+        <p>持玉將者可以動</p>
+    </ng-container>
+    <p>手數: {{(gameState$ | async).round}}</p>
 
-    </nz-content>
+    <div class="board">
+      <app-board></app-board>
+    </div>
+    <div class="control">
+      <ng-container *ngIf="gameType == 'online'">
+        <button nz-button nzType="primary" (click)="surrender()">投降</button>
+      </ng-container>
+      <ng-container *ngIf="gameType == 'history'">
+        <button nz-button nzType="primary" (click)="prevMove()">上一步</button>
+        <button nz-button nzType="primary" (click)="nextMove()">下一步</button>
+      </ng-container>
+    </div>
+
+  </nz-content>
+
 
 </nz-layout>
