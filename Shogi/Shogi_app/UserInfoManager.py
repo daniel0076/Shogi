@@ -69,7 +69,12 @@ class UserInfoManager:
 
     def save_settings(self, user_id, data):
         r = UserSettings.objects.filter(userId = user_id)
-        UserSettings.objects.filter(id = r.values()[0]['id']).update(settings = json.dumps(data))
+        if(len(r) <= 1):
+            record = UserSettings(userId = user_id, settings = json.dumps(data))
+            record.save()
+        else:
+            UserSettings.objects.filter(userId = user_id).update(settings = json.dumps(data))
+
 
     def get_settings(self, user_id):
         return self.load_settings(user_id)
