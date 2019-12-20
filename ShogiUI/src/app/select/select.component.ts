@@ -71,7 +71,6 @@ export class SelectComponent implements OnInit {
         }
         else{
             this.puzzles = PuzzleResponse;
-            console.log(this.puzzles);
             this.showPuz();
         }
     },
@@ -85,12 +84,13 @@ export class SelectComponent implements OnInit {
   }
 
   showPuz(){
-      this.recVisible = true;
+      this.puzVisible = true;
   }
 
   handleCancel(){
       this.recVisible = false;
       this.puzVisible = false;
+      this.gameService.exit();
   }
 
   startSingleGame(){
@@ -130,6 +130,8 @@ export class SelectComponent implements OnInit {
               }
           }
       );
+    this.recVisible = false;
+    console.log(this.recVisible);
     this.store.dispatch(event);
     this.navigateGame("history");
   }
@@ -146,6 +148,7 @@ export class SelectComponent implements OnInit {
           }
       );
     this.store.dispatch(event);
+    this.puzVisible = false;
     this.navigateGame("puzzle");
   }
 

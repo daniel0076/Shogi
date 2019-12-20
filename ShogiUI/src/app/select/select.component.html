@@ -11,7 +11,7 @@
         <button nz-button nzType="primary" (click)="startOnlineGame()">Online Game</button>
       </div>
       <div class="option-button-div">
-        <button nz-button nzType="primary" (click)="Puzzle">Puzzle Game</button>
+        <button nz-button nzType="primary" (click)="startPuzzleGame()">Puzzle Game</button>
       </div>
       <div class="option-button-div">
         <button nz-button nzType="primary" (click)="startHistoryGame()">History Game</button>
@@ -29,7 +29,7 @@
     <nz-modal [(nzVisible)]="puzVisible" nzTitle="Puzzles" (nzOnCancel)="handleCancel()">
       <ul class="puzzles">
         <li *ngFor="let puzzle of puzzles" (click)="onSelectPuzzle(puzzle)">
-          <span class="badge">{{record.gameId}}</span>{{record.puzzleName}}
+          <span class="badge">{{puzzle.gameId}}</span>{{puzzle.puzzleName}}
         </li>
       </ul>
     </nz-modal>
