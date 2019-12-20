@@ -74,7 +74,7 @@ export class BoardComponent implements OnInit {
 			let x: string = "";
 			let valid_pos: number[] = [];
 			for (x of this.validMove[pieceUSI]){
-				//console.log(x);
+				console.log(x);
 				valid_pos = this.usi_decode(x, this.turn);
 
 				this.validCell[valid_pos[0]][valid_pos[1]] = 'V';
@@ -82,7 +82,7 @@ export class BoardComponent implements OnInit {
 		//		console.log(valid_pos[0]);
 			//	console.log(valid_pos[1]);
 				
-				//console.log(this.validCell);
+				console.log(this.validCell);
 			}
 
 			for(let i = 0; i < 9; ++i){
@@ -171,13 +171,47 @@ export class BoardComponent implements OnInit {
 
 
   handPieceClicked(piece: Piece) {
-    // check valid move
+		
+		let original_territory: string[][] = this.territory;
+    
+		// check valid move
+
     let pieceUSI = piece.symbol + "*";
     if (!this.pieceState.selected) {  // select source
       if (!this.validMove[pieceUSI]) {  // can't move this piece
         this.message.create('error', '不合規則');
         return;
       }
+
+			this.validCell = [];
+			for(let i = 0; i < 9; ++i){
+				let tmpRow = [];
+				for(let j = 0; j < 9; ++j){
+					tmpRow.push('N');
+				}
+				this.validCell.push(tmpRow);
+			}
+
+			let validPosUSI: string = "";
+			let validPosNum: number[] = [];
+			for(validPosUSI of this.validMove[pieceUSI]){
+				console.log(validPosUSI);
+				validPosNum = this.usi_decode(validPosUSI, this.turn);
+
+				this.validCell[validPosNum[0]][validPosNum[1]] = 'V';
+
+				console.log(this.validCell);
+			}
+
+			for(let i = 0; i < 9; ++i){
+				for(let j = 0; j < 9; ++j){
+					if(this.validCell[i][j] == 'V'){
+						this.territory[i][j] = 'valid';
+					}
+				}
+			}
+	
+
       this.pieceState.selected = true;
       this.pieceState.usi_position = pieceUSI;
       piece.selected = true;
@@ -186,6 +220,7 @@ export class BoardComponent implements OnInit {
       if (pieceUSI === this.pieceState.usi_position) {  // reset
         this.pieceState.selected = false;
         this.pieceState.usi_position = "";
+				this.parseTerritory(this.ori_territory, this.turn);
         piece.selected = false;
       }
       return;
