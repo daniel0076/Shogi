@@ -84,7 +84,6 @@ class Game:
         UserInfoManagerSingleton.update_ingame(self.user1_id, False)
         UserInfoManagerSingleton.update_ingame(self.user2_id, False)
 
-
     def setRecord(self, data):
         r = GameHistory.objects.filter(id = data).values()[0]
         self.board = ShogiBoard.Board(r['init_usi'])
@@ -127,10 +126,9 @@ class Game:
 
         if data['type'] == 'exit':
             self.is_finish = True
-
-        self.send_game_status()
-        self.exit()
-        
+            self.exit()
+        else:
+            self.send_game_status()
 
     def send_game_status(self):
         data = {}
