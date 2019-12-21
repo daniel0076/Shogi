@@ -43,6 +43,8 @@ class Game:
         # Check game finish and winner
         self.is_finish = self.board.is_win
         self.winner = self.board.winner
+        if (self.type == 'puzzle'):
+            self.round += 1
 
     def prev(self):
         if (len(self.history_board) < 2):
