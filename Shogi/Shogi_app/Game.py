@@ -33,7 +33,7 @@ class Game:
         return 'user_id({0}, {1})'.format(self.user1_id, self.user2_id)
 
     def move(self, user_id, data):
-        if (turn % 2 == 0 and user_id == self.user1_id) or (turn % 2 == 1 and user_id == self.user2_id):
+        if (self.round % 2 == 0 and user_id == self.user1_id) or (self.round % 2 == 1 and user_id == self.user2_id):
             self.board.do_move(data)
             self.round = self.round + 1
             self.history_board.append(self.board.output_usi())
