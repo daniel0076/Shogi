@@ -66,7 +66,7 @@ export class AuthComponent implements OnInit{
           this.router.navigate(['/select']);
         }, 2000);
       } else {
-        this.message.create('error', '帳號密碼錯誤，或使用者不存在或以登入系統');
+        this.message.create('error', '帳號密碼錯誤，或使用者不存在或已登入系統');
       }
     },
     error: err => console.error('Observer got an error: ' + err),
