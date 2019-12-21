@@ -10,14 +10,14 @@ class TestPiece(TestCase):
         self.assertEqual(self.piece.sign_side(), -1)
 
     def test_is_promote(self):
-        self.assertEqual(self.piece.is_promote(), False)
+        self.assertEqual(self.piece.is_promote(), True)
 
     def test_promote(self):
-        self.assertEqual(self.piece.promote(), True)
+        self.assertEqual(self.piece.promote(), False)
 
     def test_front_symbol(self):
-        self.assertEqual(self.piece.get_front_symbol(), 's')
+        self.assertEqual(self.piece.get_front_symbol(), 'g')
 
     def test_symbol(self):
-        self.assertEqual(self.piece.get_symbol(), 'S')
+        self.assertEqual(self.piece.get_symbol(), 'G')
 
