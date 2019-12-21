@@ -55,8 +55,9 @@ class Game:
         return True
 
     def next(self):
-        if (len(self.record_move) < self.round):
+        if (len(self.record_move) <= self.round):
             # No next move
+            self.is_finish = True
             return False
         self.move(self.record_move[self.round])
         return True
