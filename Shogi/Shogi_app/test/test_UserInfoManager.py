@@ -38,6 +38,6 @@ class TestUserInfoManager(TestCase):
         self.assertEqual(UserInfoManagerSingleton.is_ingame(1), False)
 
     def test_settimg(self):
-        self.assertEqual(UserInfoManagerSingleton.get_settings(1), {})
+        self.assertEqual(UserInfoManagerSingleton.get_settings(1), {'content': {}, 'type': '[Settings]'})
         UserInfoManagerSingleton.update_settings(1, {"test": 9876})
-        self.assertEqual(UserInfoManagerSingleton.get_settings(1), {"test": 9876})
+        self.assertEqual(UserInfoManagerSingleton.get_settings(1), {'type': '[Settings]', 'content': {"test": 9876}})

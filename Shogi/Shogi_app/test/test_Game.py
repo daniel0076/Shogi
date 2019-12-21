@@ -16,6 +16,7 @@ class TestGame(TestCase):
                              init_usi = 'uuuuuuuu', 
                              moves    = 'jjjjjjjj')
         record.save()
+        self.maxDiff = None
         pass
 
     def test_gmae_data(self):
@@ -30,5 +31,5 @@ class TestGame(TestCase):
         ws1 = fake_ws()
         ws2 = fake_ws()
         ret = Game(1, 2, ws1, ws2)
-        self.assertEqual(ret.send_game_status(), {'content': {'turn': 1, 'round': 0, 'isFinish': False, 'winner': 0, 'usi': 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1', 'validMove': {'9g': ['9f#'], '8g': ['8f#'], '7g': ['7f#'], '6g': ['6f#'], '5g': ['5f#'], '4g': ['4f#'], '3g': ['3f#'], '2g': ['2f#'], '1g': ['1f#'], '2h': ['1h#', '3h#', '4h#', '5h#', '6h#', '7h#'], '9i': ['9h#'], '7i': ['7h#', '6h#'], '6i': ['6h#', '5h#', '7h#'], '5i': ['5h#', '4h#', '6h#'], '4i': ['4h#', '3h#', '5h#'], '3i': ['3h#', '4h#'], '1i': ['1h#']}, 'isCheckmate': False, 'checkmater': [], 'territory': 'GGGGGGGGG/WGWWWWWGW/GGGGGGGGG/WWWWWWWWW/GGGGGGGGG/BBBBBBBBB/GGGGGGGGG/BGBBBBBGB/GGGGGGGGG', 'gameType': 'proto'}, 'type': '[Game] Update Game State'})
+        self.assertEqual(ret.send_game_status(), {'content': {'turn': 1, 'round': 0, 'isFinish': False, 'winner': -1, 'usi': 'lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1', 'validMove': {'9g': ['9f#'], '8g': ['8f#'], '7g': ['7f#'], '6g': ['6f#'], '5g': ['5f#'], '4g': ['4f#'], '3g': ['3f#'], '2g': ['2f#'], '1g': ['1f#'], '2h': ['1h#', '3h#', '4h#', '5h#', '6h#', '7h#'], '9i': ['9h#'], '7i': ['7h#', '6h#'], '6i': ['6h#', '5h#', '7h#'], '5i': ['5h#', '4h#', '6h#'], '4i': ['4h#', '3h#', '5h#'], '3i': ['3h#', '4h#'], '1i': ['1h#']}, 'isCheckmate': False, 'checkmater': 'FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF/FFFFFFFFF', 'territory': 'WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/WWWWWWWWW/GGGGGGGGG/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB/BBBBBBBBB', 'gameType': 'proto'}, 'type': '[Game] Update Game State'})
 

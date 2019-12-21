@@ -46,6 +46,9 @@ export class GameState {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
       state.usi = "";
       state.gameType = undefined;
+      state.round = 0;
+      state.turn = undefined;
+      state.isFinish= false;
     }));
   }
 

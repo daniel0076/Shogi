@@ -20,7 +20,7 @@ class TestShogiBoard(TestCase):
         self.assertEqual(self.board.output_usi(), '5+P2l/1l+R6/p2pBG1pp/1ps1p4/kn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbg2n3p 126')
         # do put piece 
         self.board.do_move('B*9a')
-        self.assertEqual(self.board.output_territory(), 'GBBBBGBGG/GBGBBBBBG/GWBBGGBGG/WGBBGBBGW/BGBWGBGBB/WBGBGGBWG/BGWBBGWWG/BGGWWWWGG/GGBBGWWWW')
+        self.assertEqual(self.board.output_territory(), 'WBBBBBBGW/GWBBBBBBG/WWBWBBBWW/WWWBWBBGW/BWBBGBBBB/BBBBBGBBB/BBBBBGWWG/BBBBWWWWG/BBBBWWWWB')
         self.assertEqual(self.board.output_usi(), 'b4+P2l/1l+R6/p2pBG1pp/1ps1p4/kn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L b Sg2n3p 127')
         # do simple move
         self.board.do_move('1f1g')
