@@ -10,4 +10,5 @@ def send(text):
     print("=> '%s'" % result)
 
 send('{"type": "register", "content":{"username":"test", "password":"password"}}')
+send('{"type": "register", "content":{"username":"test3", "password":"pax"}}')
 send('{"type": "register", "content":{"username":"test2", "password":"password"}}')
