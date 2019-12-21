@@ -26,11 +26,14 @@ print("2=> '%s'" % result)
 
 ws1.send('{"type": "game", "content":{"type": "online"}}')
 ws2.send('{"type": "game", "content":{"type": "online"}}')
+ws2.send('{"type": "game", "content":{"type": "online"}}')
 
 result =  ws1.recv()
 print("1=> '%s'" % result)
 result =  ws2.recv()
 print("2=> '%s'" % result)
+result =  ws2.recv()
+print("2=> '%s'" % result)
 
-send1('{"type": "move", "content":{"type": "surrender", "content": 1}}')
+#send1('{"type": "move", "content":{"type": "surrender", "content": 1}}')
 #time.sleep(5)

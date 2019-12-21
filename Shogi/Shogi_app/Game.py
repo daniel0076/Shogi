@@ -32,12 +32,13 @@ class Game:
     def __str__(self):
         return 'user_id({0}, {1})'.format(self.user1_id, self.user2_id)
 
-    def move(self, data):
-        self.board.do_move(data)
-        self.round = self.round + 1
-        self.history_board.append(self.board.output_usi())
-        self.history_move.append(data)
-        self.check_finish()
+    def move(self, user_id, data):
+        if (turn % 2 == 0 and user_id == self.user1_id) or (turn % 2 == 1 and user_id == self.user2_id):
+            self.board.do_move(data)
+            self.round = self.round + 1
+            self.history_board.append(self.board.output_usi())
+            self.history_move.append(data)
+            self.check_finish()
 
     def check_finish(self):
         # Check game finish and winner
@@ -59,7 +60,7 @@ class Game:
             # No next move
             self.is_finish = True
             return False
-        self.move(self.record_move[self.round])
+        self.move(self.user1_id, self.record_move[self.round])
         return True
 
     def surrender(self, data):
@@ -105,7 +106,7 @@ class Game:
 
     def update(self, data):
         if data['type'] == 'move':
-            self.move(data['content'])
+            self.move(data['userId'], data['content'])
 
         if data['type'] == 'prev':
             self.prev()
