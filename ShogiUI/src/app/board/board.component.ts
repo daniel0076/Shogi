@@ -123,7 +123,9 @@ export class BoardComponent implements OnInit {
       for (let i = 0; i < 9; ++i) {
         for (let j = 0; j < 9; ++j) {
           if (this.validCell[i][j] == 'V') {
-            this.territory[i][j] = 'valid';
+            if(	this.territory[i][j] == "checkmating_first" ||
+								this.territory[i][j] == "checkmating_second"	) this.territory[i][j] = 'valid-checkmating';
+						else this.territory[i][j] = 'valid';
           }
         }
       }
@@ -146,7 +148,9 @@ export class BoardComponent implements OnInit {
         this.selectPiece(rowIndex, colIndex, false);
         //this.territory = original_territory;
         this.parseTerritory(this.ori_territory, this.turn);
+		//console.log("ter="+this.territory);
 				this.parseCheckmater(this.ori_checkmater, this.turn)
+		//console.log("che="+this.checkmater);
         return
       }
       // check valid move
@@ -393,7 +397,10 @@ export class BoardComponent implements OnInit {
 			for(let j = 0; j < 9; ++j){
 				switch (rows[i][j]){
 					case 'T':
-						tmpRow.push('checkmating');
+						//tmpRow.push(this.territory[i][j]);
+						if(this.territory[i][j] == "black-side")	tmpRow.push('checkmating_first');
+						else																			tmpRow.push('checkmating_second');
+						//tmpRow.push('checkmating');
 						break;					
 					case 'F':
 						tmpRow.push(this.territory[i][j]);
