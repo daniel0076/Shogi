@@ -45,6 +45,7 @@ class Game:
         self.winner = self.board.winner
         if (self.type == 'puzzle'):
             self.round += 1
+            self.winner = 1
 
     def prev(self):
         if (len(self.history_board) < 2):
