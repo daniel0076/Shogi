@@ -18,9 +18,9 @@ class UserInfoManager:
         if len(r) >= 1:
             user_id = json.loads(serializers.serialize('json', r))[0]['pk']
             if not self.is_online(user_id):
+                self.update_online(user_id, True)
                 return {"type": "[Auth] Login Response",
                         "content": {"status": True, "userId": user_id}}
-                self.update_online(user_id, True)
 
         return {"type": "[Auth] Login Response",
                 "content": {"status": False, "userId": -1}}
