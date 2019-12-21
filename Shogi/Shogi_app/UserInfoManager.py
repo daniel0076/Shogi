@@ -31,6 +31,10 @@ class UserInfoManager:
             return {"type": "[Auth] Register Response",
                     "content": {"status": False,    
                                 "errorMsg": "Username already be used"}}
+        if len(data['password']) < 4:
+            return {"type": "[Auth] Register Response",
+                    "content": {"status": False,    
+                                "errorMsg": "Short password"}}
         record = UserAccount(username = data['username'], password = data['password'])
         record.save()
         return {"type": "[Auth] Register Response",
