@@ -68,8 +68,11 @@ export class GameState {
 
   @Action(WebSocketDisconnected)
   WsDisconnected() {
-    this.message.create('error', '後端離線...重新連線中');
-    this.store.dispatch(new ConnectWebSocket());
+    this.message.create('error', '後端離線...1秒後重新連線中');
+    setTimeout(()=>{
+      this.store.dispatch(new ConnectWebSocket());
+    }, 1000)
+
   }
 
   @Action(WebSocketConnected)
