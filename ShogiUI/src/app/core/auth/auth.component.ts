@@ -7,6 +7,7 @@ import { Select } from '@ngxs/store';
 import { AuthState } from './store/auth.state';
 import { AuthStateModel } from './store/auth.state';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { LoginResponse, RegisterResponse} from './auth.interface';
 
 @Component({
   selector: 'app-auth',
@@ -15,8 +16,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class AuthComponent implements OnInit{
 
-  @Select(AuthState.getRegisterResponse) registerResponse$: Observable<AuthStateModel>;
-  @Select(AuthState.getLoginResponse) loginResponse$: Observable<AuthStateModel>;
+  @Select(AuthState.getRegisterResponse) registerResponse$: Observable<RegisterResponse>;
+  @Select(AuthState.getLoginResponse) loginResponse$: Observable<LoginResponse>;
   loginForm: FormGroup;
   regForm: FormGroup;
   regVisible = false;

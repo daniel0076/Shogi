@@ -10,6 +10,7 @@ import { BoardService } from './board.service';
 import { PieceState } from './board.interface';
 import { Router } from "@angular/router"
 import { SettingState, SettingStateModel } from '../setting/store/setting.state';
+import { SettingResponse } from '../setting/setting.interface';
 
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
@@ -20,7 +21,7 @@ import { trigger, state, style, animate, transition } from '@angular/animations'
 })
 export class BoardComponent implements OnInit {
   @Select(GameState.getGameState) gameState$: Observable<GameStateModel>;
-  @Select(SettingState.getSettingResponse) settingState$: Observable<SettingStateModel>;
+  @Select(SettingState.getSettingResponse) settingState$: Observable<SettingResponse>;
   private gameStateSubscription: Subscription = null;
   private settingStateSubscription: Subscription = null;
   private gameType: string = null;
