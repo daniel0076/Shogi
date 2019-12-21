@@ -411,19 +411,21 @@ export class BoardComponent implements OnInit {
 	}
 
   parseFinish(isFinish: boolean, winner: number, round: number) {
-    if (isFinish && winner != undefined) {
-      if (this.gameType === "online") {
+    if (isFinish) {
+      if(winner != -1){
         if (winner == this.turn) {
           this.winnerModal();
         } else {
           this.loserModal();
         }
-      } else {
         if(winner && round % 2 === this.turn){
           this.winnerModal();
         } else {
           this.loserModal();
         }
+      }
+      else{
+         this.Force_Exit();
       }
     }
   }
@@ -506,6 +508,16 @@ export class BoardComponent implements OnInit {
       }
     });
   }
+
+  Force_Exit(){
+    this.message.create('success', '遊戲結束!');
+    this.gameService.resetGame();
+    setTimeout(() => {
+      this.router.navigate(['/select']);
+    }, 100);
+    this.gameService.exit();
+  }
+
   showModal(title: string, content: string): void {
     const modal = this.modalService.create({
       nzTitle: title,
