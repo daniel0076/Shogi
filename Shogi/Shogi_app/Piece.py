@@ -16,7 +16,7 @@ class Piece():
         return 1 
 
     def is_promote(self):
-        return self.symbol >= PRO_P  
+        return self.symbol >= G 
 
     def promote(self):
         if PIECE_PROMOTE[self.symbol] != NONE:
