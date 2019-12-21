@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 import { Settingform } from './setting.interface';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Select } from '@ngxs/store';
+import { SettingResponse } from './setting.interface';
 
 @Component({
     selector: 'app-setting',
@@ -17,7 +18,7 @@ import { Select } from '@ngxs/store';
 
 export class SettingComponent implements OnInit {
 
-    @Select(SettingState.getSettingResponse) settingResponse$: Observable<SettingStateModel>; 
+    @Select(SettingState.getSettingResponse) settingResponse$: Observable<SettingResponse>; 
     settingVisible = false;
     private user_setting: Settingform = {show_terr: true};
     show_territory = "On"; 

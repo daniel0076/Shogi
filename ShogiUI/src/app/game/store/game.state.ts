@@ -1,6 +1,10 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { produce, Draft } from 'immer';
 import { Game } from './game.actions';
+import { WebSocketDisconnected, WebSocketConnected } from '@ngxs/websocket-plugin';
+import { ConnectWebSocket } from '@ngxs/websocket-plugin';
+import { NzMessageService } from 'ng-zorro-antd/message';
+import { Store } from '@ngxs/store';
 
 export interface GameStateModel {
   usi: string;
@@ -20,7 +24,10 @@ export interface GameStateModel {
 })
 
 export class GameState {
-  constructor() { }
+  constructor(
+    private message: NzMessageService,
+    private store: Store
+  ) { }
 
   @Selector()
   static getGameState(state: GameStateModel): GameStateModel {
@@ -57,5 +64,19 @@ export class GameState {
     ctx.setState(produce((state: Draft<GameStateModel>) => {
       state.turn = action.turn;
     }));
+  }
+
+  @Action(WebSocketDisconnected)
+  WsDisconnected() {
+    this.message.create('error', '後端離線...1秒後重新連線中');
+    setTimeout(()=>{
+      this.store.dispatch(new ConnectWebSocket());
+    }, 1000)
+
+  }
+
+  @Action(WebSocketConnected)
+  WsConnected() {
+    this.message.create('info', '後端連線完成，請登入');
   }
 }

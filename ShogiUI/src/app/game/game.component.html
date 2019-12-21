@@ -14,7 +14,7 @@
       <app-board></app-board>
     </div>
     <div class="control">
-      <ng-container *ngIf="gameType == 'online'">
+      <ng-container *ngIf="gameType == 'online' && (gameState$|async).usi">
         <button nz-button nzType="primary" (click)="surrender()">投降</button>
       </ng-container>
       <ng-container *ngIf="gameType == 'history'">

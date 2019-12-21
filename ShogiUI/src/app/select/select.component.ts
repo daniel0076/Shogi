@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { NzMessageService } from 'ng-zorro-antd/message';
 import { Store } from '@ngxs/store';
 import { SendWebSocketMessage } from '@ngxs/websocket-plugin';
+import { RecordResponse, PuzzleResponse } from './select.interface';
 
 @Component({
     selector: 'app-select',
@@ -17,8 +18,8 @@ import { SendWebSocketMessage } from '@ngxs/websocket-plugin';
 
 export class SelectComponent implements OnInit {
 
-    @Select(SelectState.getRecordResponse) RecordResponse$: Observable<SelectStateModel>;
-    @Select(SelectState.getPuzzleResponse) PuzzleResponse$: Observable<SelectStateModel>;
+    @Select(SelectState.getRecordResponse) RecordResponse$: Observable<RecordResponse>;
+    @Select(SelectState.getPuzzleResponse) PuzzleResponse$: Observable<PuzzleResponse>;
     recVisible = false;
     puzVisible = false;
     records = [];

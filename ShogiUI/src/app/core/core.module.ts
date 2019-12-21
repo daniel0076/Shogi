@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AuthComponent } from './auth/auth.component';
 import { SharedModule } from '../shared/shared.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NgxsModule } from '@ngxs/store';
+import { NgZorroAntdModule, NZ_I18N, en_US } from 'ng-zorro-antd';
 
 
 @NgModule({
@@ -10,7 +12,9 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgZorroAntdModule,
+    NgxsModule.forRoot([])
   ],
   exports: [AuthComponent]
 })

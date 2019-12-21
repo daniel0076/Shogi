@@ -7,6 +7,7 @@ import { Select } from '@ngxs/store';
 import { AuthState } from './store/auth.state';
 import { AuthStateModel } from './store/auth.state';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import { LoginResponse, RegisterResponse} from './auth.interface';
 
 @Component({
   selector: 'app-auth',
@@ -15,8 +16,8 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 })
 export class AuthComponent implements OnInit{
 
-  @Select(AuthState.getRegisterResponse) registerResponse$: Observable<AuthStateModel>;
-  @Select(AuthState.getLoginResponse) loginResponse$: Observable<AuthStateModel>;
+  @Select(AuthState.getRegisterResponse) registerResponse$: Observable<RegisterResponse>;
+  @Select(AuthState.getLoginResponse) loginResponse$: Observable<LoginResponse>;
   loginForm: FormGroup;
   regForm: FormGroup;
   regVisible = false;
@@ -65,7 +66,7 @@ export class AuthComponent implements OnInit{
           this.router.navigate(['/select']);
         }, 2000);
       } else {
-        this.message.create('error', '帳號密碼錯誤，或使用者不存在');
+        this.message.create('error', '帳號密碼錯誤，或使用者不存在或以登入系統');
       }
     },
     error: err => console.error('Observer got an error: ' + err),
