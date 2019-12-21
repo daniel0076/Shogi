@@ -275,10 +275,10 @@ export class BoardComponent implements OnInit {
       this.showModal('棋局開始', '');
     }
     setTimeout(() => {
-      if (this.gameType === 'single') {
-        this.turn = 0;
-      } else {
+      if (this.gameType === 'online') {
         this.turn = gameState.turn;
+      } else {
+        this.turn = 0;
       }
       this.parseFinish(gameState.isFinish, gameState.winner, gameState.round);
       this.validMove = gameState.validMove;
@@ -306,7 +306,7 @@ export class BoardComponent implements OnInit {
       this.board.push(this.parsePieces(row));
     }
 
-    if (this.gameType != 'single') {
+    if (this.gameType === 'online') {
       // turn the side of board
       if (this.turn === 1) {
         this.board = this.board.reverse();
