@@ -5,7 +5,7 @@ migrations/
 
 # Generic stuff we don't want
 
-db.*
+db.sqlite3
 .*.swp
 *.log
 *.pickle

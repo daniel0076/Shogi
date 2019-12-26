@@ -16,3 +16,6 @@ class TestLocal:
         wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
         selenium.find_element_by_xpath("/html/body/app-root/div/app-select/nz-layout/nz-content/div/div[1]/button").click()
         wait.until(presence_of_element_located((By.XPATH, "/html/body/app-root/div/app-game/nz-layout/nz-content/p[1]")))
+        selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[1]/app-board/div[2]/button").click()
+        wait.until(presence_of_element_located((By.XPATH, "/html/body/app-root/div/app-game/nz-layout/nz-content/p[1]")))
+        
