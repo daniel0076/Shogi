@@ -3,13 +3,36 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.expected_conditions import presence_of_element_located
+from time import sleep
 
-#This example requires Selenium WebDriver 3.13 or newer
-with webdriver.Chrome() as driver:
-    driver.get("http://localhost:4200")
-    driver.find_element_by_name("username").send_keys("test")
-    driver.find_element_by_name("password").send_keys("test", Keys.ENTER)
+class TestLogin:
 
-    wait = WebDriverWait(driver, 5)
-    result = wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
-    #print(first_result.get_attribute("textContent"))
+    def test_login_suc(self, selenium):
+        wait = WebDriverWait(selenium, 5)
+
+        selenium.get("http://localhost:4200")
+        selenium.find_element_by_name("username").send_keys("test")
+        selenium.find_element_by_name("password").send_keys("test", Keys.ENTER)
+        wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
+
+    def test_login_wrong_password(self, selenium):
+        wait = WebDriverWait(selenium, 5)
+
+        selenium.get("http://localhost:4200")
+        sleep(4)
+        selenium.find_element_by_name("username").send_keys("test")
+        selenium.find_element_by_name("password").send_keys("testt", Keys.ENTER)
+        wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span")))
+        text = selenium.find_element_by_xpath("/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span").text
+        assert text == "帳號密碼錯誤，或使用者不存在或已登入系統"
+
+    def test_login_invalid_username(self, selenium):
+        wait = WebDriverWait(selenium, 5)
+
+        selenium.get("http://localhost:4200")
+        sleep(4)
+        selenium.find_element_by_name("username").send_keys("testt")
+        selenium.find_element_by_name("password").send_keys("test", Keys.ENTER)
+        wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span")))
+        text = selenium.find_element_by_xpath("/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span").text
+        assert text == "帳號密碼錯誤，或使用者不存在或已登入系統"
