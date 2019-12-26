@@ -276,9 +276,6 @@ export class BoardComponent implements OnInit {
   parseGameState(gameState: GameStateModel) {
     console.log(gameState);
     this.gameType = gameState.gameType;
-    if (gameState.turn != undefined && this.turn === undefined) {
-      this.showModal('棋局開始', '');
-    }
     setTimeout(() => {
       if (this.gameType === 'online') {
         this.turn = gameState.turn;
