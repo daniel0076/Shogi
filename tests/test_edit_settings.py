@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import presence_of_element_located
+from selenium.webdriver.support.expected_conditions import presence_of_element_located, invisibility_of_element_located
 import time
 
 class TestUserSettings:
@@ -22,9 +22,12 @@ class TestUserSettings:
         selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").send_keys(Keys.ENTER)
         selenium.find_element_by_xpath("//div[contains(@class, 'ant-modal-footer')]/button[2]").click()
         wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '正在儲存' + "')]")))
+        wait.until(invisibility_of_element_located((By.XPATH, "//*[contains(@class, 'ant-modal-mask')]")))
+        time.sleep(1)
 
         # check that settings changed
         selenium.find_element_by_xpath("//app-setting/div/button").click()
+        wait.until(presence_of_element_located((By.XPATH, "//div[@class='ant-modal-content']")))
         # wait for angular render
         wait.until(presence_of_element_located((By.XPATH, "//span[text()='Show Territory']")))
         new_value = selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").text
@@ -33,3 +36,5 @@ class TestUserSettings:
             assert new_value == "Off"
         elif old_value == "Off":
             assert new_value == "On"
+
+        selenium.close()

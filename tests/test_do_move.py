@@ -50,6 +50,8 @@ class TestDoMove:
         # If the test finally goes here, the test is passed
         assert True
 
+        selenium.close()
+
     def test_invalid_move(self, selenium):
         wait = WebDriverWait(selenium, 5)
         selenium.get("http://localhost:4200")
@@ -64,3 +66,4 @@ class TestDoMove:
         wait.until(presence_of_element_located((By.XPATH, "//table[@class='battlefield']/tbody/tr[7]/td[7]//div[@class='piece selected']")))
         selenium.find_element_by_xpath("//table[@class='battlefield']/tbody/tr[8]/td[7]").click()
         wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '無法走到那' + "')]")))
+        selenium.close()
