@@ -20,9 +20,7 @@ class TestPuzzle:
         wait.until(presence_of_element_located((By.XPATH, "/html/body/app-root/div/app-game/nz-layout/nz-content/div[1]/app-board/div[1]/div/div[2]/div[2]/table/tr[2]/td[3]/app-piece/div/img")))
         selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[1]/app-board/div[1]/div/div[2]/div[2]/table/tr[2]/td[3]/app-piece/div/img").click()
         selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[1]/app-board/div[1]/div/div[1]/table/tbody/tr[2]/td[2]").click()
-        wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div/nz-modal/div/div[2]/div/div/div")))
-        selenium.find_element_by_xpath("/html/body/div[1]/div[2]/div/nz-modal/div/div[2]/div/div/div/div/div[2]/button").click()
-        wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
+        wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '棋局結束' + "')]")))
 
     def test_puzzle_empty(self, selenium):
         wait = WebDriverWait(selenium, 5)

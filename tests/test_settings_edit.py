@@ -36,5 +36,23 @@ class TestUserSettings:
             assert new_value == "Off"
         elif old_value == "Off":
             assert new_value == "On"
-
-        selenium.close()
+        
+        time.sleep(1)
+        
+        
+        # turn back to original value
+        selenium.get("http://localhost:4200")
+        selenium.find_element_by_name("username").send_keys("test")
+        selenium.find_element_by_name("password").send_keys("test", Keys.ENTER)
+        wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
+        selenium.find_element_by_xpath("//app-setting/div/button").click()
+        # wait for angular render
+        wait.until(presence_of_element_located((By.XPATH, "//div[@class='ant-modal-content']")))
+        time.sleep(2)
+        # click on settings
+        selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").send_keys(Keys.ENTER)
+        time.sleep(2)
+        selenium.find_element_by_xpath("//div[contains(@class, 'ant-modal-footer')]/button[2]").click()
+        time.sleep(2)
+        wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '正在儲存' + "')]")))
+        wait.until(invisibility_of_element_located((By.XPATH, "//*[contains(@class, 'ant-modal-mask')]")))

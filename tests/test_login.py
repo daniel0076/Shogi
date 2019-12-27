@@ -23,8 +23,7 @@ class TestLogin:
         selenium.find_element_by_name("username").send_keys("test")
         selenium.find_element_by_name("password").send_keys("testt", Keys.ENTER)
         wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span")))
-        text = selenium.find_element_by_xpath("/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span").text
-        assert text == "帳號密碼錯誤，或使用者不存在或已登入系統"
+        wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '帳號密碼錯誤，或使用者不存在或已登入系統' + "')]")))
 
     def test_login_invalid_username(self, selenium):
         wait = WebDriverWait(selenium, 5)
@@ -34,5 +33,4 @@ class TestLogin:
         selenium.find_element_by_name("username").send_keys("testt")
         selenium.find_element_by_name("password").send_keys("test", Keys.ENTER)
         wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span")))
-        text = selenium.find_element_by_xpath("/html/body/div[1]/div[1]/div/nz-message-container/div/nz-message/div/div/div/span").text
-        assert text == "帳號密碼錯誤，或使用者不存在或已登入系統"
+        wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '帳號密碼錯誤，或使用者不存在或已登入系統' + "')]")))

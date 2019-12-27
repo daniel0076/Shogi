@@ -20,19 +20,24 @@ class TestStoreSettings:
         # click on settings
         old_value = selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").text
         selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").send_keys(Keys.ENTER)
+        time.sleep(1)
         selenium.find_element_by_xpath("//div[contains(@class, 'ant-modal-footer')]/button[2]").click()
         wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '正在儲存' + "')]")))
+        time.sleep(2)
 
         # check that settings changed
         selenium.find_element_by_xpath("//app-setting/div/button").click()
         # wait for angular render
         wait.until(presence_of_element_located((By.XPATH, "//span[text()='Show Territory']")))
-        new_value = selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").text
 
         if old_value == "On":
-            assert new_value == "Off"
+            wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + 'Off' + "')]")))
+            new_value = "Off"
         elif old_value == "Off":
-            assert new_value == "On"
+            wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + 'On' + "')]")))
+            new_value = "On"
+
+        time.sleep(2)
 
         # reconnect
         selenium.get("http://localhost:4200")

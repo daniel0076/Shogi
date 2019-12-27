@@ -22,14 +22,14 @@ class TestTerritory:
         # click on settings
         current_value = selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").text
 
-        if current_value == "Off": # turn if off
+        if current_value == "Off": # turn if on
             # click on settings
             selenium.find_element_by_xpath("//span[text()='Show Territory']/following-sibling::button").send_keys(Keys.ENTER)
             selenium.find_element_by_xpath("//div[contains(@class, 'ant-modal-footer')]/button[2]").click()
             wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '正在儲存' + "')]")))
-            time.sleep(1)
+            time.sleep(2)
 
-        selenium.find_element_by_xpath("//app-select/nz-layout/nz-content/div/div[1]/button").click()
+        selenium.find_element_by_xpath("//app-select/nz-layout/nz-content/div/div[1]/button").send_keys(Keys.ENTER)
         # wait for angular game
         wait.until(presence_of_element_located((By.XPATH, "//table[@class='battlefield']/tbody/tr")))
         # check territory color

@@ -20,9 +20,10 @@ class TestHistory:
         wait.until(presence_of_element_located((By.XPATH, "/html/body/app-root/div/app-game/nz-layout/nz-content/p[1]")))
         selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[2]/button[2]").click()
         selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[2]/button[2]").click()
-        selenium.find_element_by_xpath("/html/body/app-root/div/app-game/nz-layout/nz-content/div[1]/app-board/div[2]/button").click()
-        wait.until(presence_of_element_located((By.XPATH, "/html/body/div[1]/div[2]/div/nz-modal/div/div[2]/div/div/div/div/div[2]/button[2]")))
-        selenium.find_element_by_xpath("/html/body/div[1]/div[2]/div/nz-modal/div/div[2]/div/div/div/div/div[2]/button[2]").click()
+        # exit
+        selenium.find_element_by_xpath("//app-game//app-board/div[2]/button").click()
+        wait.until(presence_of_element_located((By.XPATH, "//*[contains(text(),'" + '是否確認結束' + "')]")))
+        selenium.find_element_by_xpath("//div[@class='ant-modal-confirm-btns']/button[2]").send_keys(Keys.ENTER)
         wait.until(presence_of_element_located((By.CLASS_NAME, "game-options")))
 
     def test_history_empty(self, selenium):
