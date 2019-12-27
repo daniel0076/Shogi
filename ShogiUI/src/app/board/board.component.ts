@@ -377,7 +377,7 @@ export class BoardComponent implements OnInit {
             break;
 
           default:
-            tmp_row.push('QQ');
+            tmp_row.push('default');
             break;
         }
       }

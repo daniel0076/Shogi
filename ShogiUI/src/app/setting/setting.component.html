@@ -2,6 +2,6 @@
 <button mat-raised-button (click)="Setting()">Setting</button>
 </div>
 <nz-modal [(nzVisible)] = "settingVisible" nzTitle="Setting" (nzOnOk)="SubmitSetting()" (nzOnCancel)="handleCancel()">
-    <span class="badge">Show Territory </span>
+    <span class="badge">Show Territory</span>
     <button (click)="handleSet()">{{show_territory}}</button>
 </nz-modal>

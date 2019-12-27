@@ -17,7 +17,6 @@ export class SettingService {
                   content: userSet
             }
         );
-        console.log('QQQQ');
         this.store.dispatch(event);
     }
 
