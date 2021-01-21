@@ -21,7 +21,7 @@
     "@angular/router": "~8.2.14",
     "@ngxs/store": "^3.6.0",
     "@ngxs/websocket-plugin": "^3.6.0",
-    "immer": "^5.0.1",
+    "immer": "^8.0.1",
     "ng-zorro-antd": "^8.5.1",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
